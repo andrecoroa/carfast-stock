@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Histórico de movimentos</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Artigo</th>
+      <th>Tipo</th>
+      <th>Qtd.</th>
+      <th>Motivo</th>
+      <th>Matrícula</th>
+      <th>Responsável</th>
+      <th>Observações</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for m in movimentos %}
+    <tr>
+      <td>{{ m.criado_em }}</td>
+      <td>{{ m.codigo }} — {{ m.nome }}</td>
+      <td>{{ m.tipo }}</td>
+      <td>{{ m.quantidade }}</td>
+      <td>{{ m.motivo }}</td>
+      <td>{{ m.matricula }}</td>
+      <td>{{ m.responsavel }}</td>
+      <td>{{ m.observacoes }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="8">Ainda não existem movimentos.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

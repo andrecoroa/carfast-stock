@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Novo movimento</h2>
+<form method="post">
+  <label>Artigo
+    <select name="artigo_id" required>
+      {% for a in artigos %}
+        <option value="{{ a.id }}">{{ a.codigo }} — {{ a.nome }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Tipo
+    <select name="tipo">
+      <option>Entrada</option>
+      <option>Saída</option>
+      <option>Ajuste</option>
+    </select>
+  </label>
+  <label>Quantidade <input name="quantidade" type="number" min="1" required></label>
+  <label>Motivo <input name="motivo" placeholder="Compra / Utilização / Correção"></label>
+  <label>Matrícula <input name="matricula" placeholder="apenas nas saídas, se aplicável"></label>
+  <label>Responsável <input name="responsavel"></label>
+  <label>Observações <textarea name="observacoes"></textarea></label>
+  <button type="submit">Registar movimento</button>
+</form>
+{% endblock %}

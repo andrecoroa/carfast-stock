@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <title>CarFast Stock MVP</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+  <h1>CarFast — Gestão de Stocks</h1>
+  <nav>
+    <a href="{{ url_for('index') }}">Stock</a>
+    <a href="{{ url_for('novo_artigo') }}">Novo artigo</a>
+    <a href="{{ url_for('novo_movimento') }}">Novo movimento</a>
+    <a href="{{ url_for('movimentos') }}">Histórico</a>
+    <a href="{{ url_for('export_artigos') }}">Exportar artigos</a>
+    <a href="{{ url_for('export_movimentos') }}">Exportar movimentos</a>
+  </nav>
+</header>
+
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

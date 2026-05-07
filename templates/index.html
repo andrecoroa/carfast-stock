@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Stock atual</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Código</th>
+      <th>Artigo</th>
+      <th>Categoria</th>
+      <th>Localização</th>
+      <th>Stock atual</th>
+      <th>Stock mínimo</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for a in artigos %}
+    <tr class="{{ 'alerta' if a.alerta else '' }}">
+      <td>{{ a.codigo }}</td>
+      <td>{{ a.nome }}</td>
+      <td>{{ a.categoria }}</td>
+      <td>{{ a.localizacao }}</td>
+      <td>{{ a.stock_atual }}</td>
+      <td>{{ a.stock_minimo }}</td>
+      <td>{{ 'A repor' if a.alerta else 'OK' }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="7">Ainda não existem artigos.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

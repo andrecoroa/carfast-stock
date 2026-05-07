@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Novo artigo</h2>
+<form method="post">
+  <label>Código <input name="codigo" required placeholder="PNEU-001"></label>
+  <label>Nome <input name="nome" required placeholder="Pneu 205/55 R16"></label>
+  <label>Categoria
+    <select name="categoria">
+      <option>Pneus</option>
+      <option>Peças</option>
+      <option>Consumíveis</option>
+      <option>Limpeza</option>
+      <option>Material de escritório</option>
+      <option>Equipamentos</option>
+    </select>
+  </label>
+  <label>Unidade <input name="unidade" value="unidade"></label>
+  <label>Localização <input name="localizacao" value="Armazém OPO"></label>
+  <label>Fornecedor <input name="fornecedor"></label>
+  <label>Preço unitário <input name="preco_unitario" type="number" step="0.01" value="0"></label>
+  <label>Stock mínimo <input name="stock_minimo" type="number" value="0" required></label>
+  <button type="submit">Criar artigo</button>
+</form>
+{% endblock %}
