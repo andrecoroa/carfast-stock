@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h2>Frota</h2>
+  <a class="button" href="{{ url_for('importar_frota_view') }}">Importar Excel Rentway</a>
+</div>
+
+<div class="summary-grid">
+  <div class="summary-card"><strong>Total</strong><span>{{ resumo.total or 0 }}</span></div>
+  <div class="summary-card"><strong>Ativas</strong><span>{{ resumo.ativas or 0 }}</span></div>
+  <div class="summary-card"><strong>Em venda</strong><span>{{ resumo.em_venda or 0 }}</span></div>
+  <div class="summary-card"><strong>Vendidas</strong><span>{{ resumo.vendidas or 0 }}</span></div>
+</div>
+
+<form method="get" class="filter-form">
+  <div class="grid">
+    <label>Pesquisa matrícula/VIN <input name="q" value="{{ filtros.q }}"></label>
+    <label>Estado frota
+      <select name="estado">
+        {% for e in ['Todas','Ativa','Em venda','Vendida','Baixada','Abatida','Imobilizada'] %}
+          <option value="{{ e }}" {% if filtros.estado == e %}selected{% endif %}>{{ e }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Marca
+      <select name="marca"><option value="">Todas</option>{% for m in marcas %}<option value="{{ m.marca }}" {% if filtros.marca == m.marca %}selected{% endif %}>{{ m.marca }}</option>{% endfor %}</select>
+    </label>
+    <label>Modelo
+      <select name="modelo"><option value="">Todos</option>{% for m in modelos %}<option value="{{ m.modelo }}" {% if filtros.modelo == m.modelo %}selected{% endif %}>{{ m.modelo }}</option>{% endfor %}</select>
+    </label>
+    <label>KM mínimo <input name="km_min" type="number" value="{{ filtros.km_min }}"></label>
+    <label>KM máximo <input name="km_max" type="number" value="{{ filtros.km_max }}"></label>
+  </div>
+  <button type="submit">Filtrar</button>
+  <a class="button secondary" href="{{ url_for('viaturas') }}">Limpar</a>
+</form>
+
+<table>
+<thead><tr><th>Matrícula</th><th>Estado</th><th>VIN</th><th>Marca</th><th>Modelo</th><th>Versão</th><th>KM</th><th>Compra</th><th>Venda</th><th>Valor venda</th><th></th></tr></thead>
+<tbody>
+{% for v in viaturas %}
+<tr>
+<td>{{ v.matricula }}</td><td><span class="badge">{{ v.estado_frota or 'Ativa' }}</span></td><td>{{ v.vin or '' }}</td><td>{{ v.marca or '' }}</td><td>{{ v.modelo or '' }}</td><td>{{ v.versao or '' }}</td><td>{{ v.km_atual or '' }}</td><td>{{ v.data_compra or '' }}</td><td>{{ v.data_venda or '' }}</td><td>{{ v.valor_venda or '' }}</td><td><a href="{{ url_for('viatura_detail', viatura_id=v.id) }}">abrir</a></td>
+</tr>
+{% else %}<tr><td colspan="11">Sem resultados.</td></tr>{% endfor %}
+</tbody>
+</table>
+<p class="muted">Mostra no máximo 500 registos por pesquisa.</p>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h2>Importar Frota Rentway</h2><a class="button secondary" href="{{ url_for('viaturas') }}">Voltar à frota</a></div>
+<form method="post" enctype="multipart/form-data">
+  <label>Responsável <input name="responsavel" placeholder="Nome de quem está a importar"></label>
+  <label>Ficheiro Excel Rentway <input type="file" name="ficheiro" accept=".xlsx,.xls" required></label>
+  <button type="submit">Importar frota</button>
+</form>
+<h3>Últimas importações</h3>
+<table><thead><tr><th>Data</th><th>Tipo</th><th>Ficheiro</th><th>Criadas</th><th>Atualizadas</th><th>Vendidas</th><th>Ativas</th><th>Ignoradas</th><th>Responsável</th></tr></thead><tbody>
+{% for i in importacoes %}<tr><td>{{ i.criado_em }}</td><td>{{ i.tipo }}</td><td>{{ i.original_name }}</td><td>{{ i.criadas }}</td><td>{{ i.atualizadas }}</td><td>{{ i.vendidas }}</td><td>{{ i.ativas }}</td><td>{{ i.ignoradas }}</td><td>{{ i.responsavel or '' }}</td></tr>{% else %}<tr><td colspan="9">Ainda não existem importações registadas.</td></tr>{% endfor %}
+</tbody></table>
+{% endblock %}
