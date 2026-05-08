@@ -2,19 +2,16 @@
 <html lang="pt">
 <head>
   <meta charset="utf-8">
-  <title>CarFast Stock MVP</title>
+  <title>CarFast Hub Operacional</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <header>
-  <h1>CarFast — Gestão de Stocks</h1>
+  <h1>CarFast — Hub Operacional</h1>
   <nav>
-    <a href="{{ url_for('index') }}">Stock</a>
-    <a href="{{ url_for('novo_artigo') }}">Novo artigo</a>
-    <a href="{{ url_for('novo_movimento') }}">Novo movimento</a>
-    <a href="{{ url_for('movimentos') }}">Histórico</a>
-    <a href="{{ url_for('export_artigos') }}">Exportar artigos</a>
-    <a href="{{ url_for('export_movimentos') }}">Exportar movimentos</a>
+    <a href="{{ url_for('home') }}">Início</a>
+    <a href="{{ url_for('stock_home') }}">📦 Gestão de Stock</a>
+    <a href="{{ url_for('manutencao_home') }}">🔧 Gestão de Manutenção</a>
   </nav>
 </header>
 

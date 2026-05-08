@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Escolhe a área de trabalho</h2>
+
+<div class="hub-grid">
+
+  <a class="hub-card" href="{{ url_for('stock_home') }}">
+    <div class="hub-icon">📦</div>
+    <h2>Gestão de Stock</h2>
+    <p>Artigos, movimentos, histórico, consumos e controlo de stock.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('manutencao_home') }}">
+    <div class="hub-icon">🔧</div>
+    <h2>Gestão de Manutenção</h2>
+    <p>Processos, diagnósticos, FO, validações e histórico técnico da viatura.</p>
+  </a>
+
+</div>
+
+{% endblock %}

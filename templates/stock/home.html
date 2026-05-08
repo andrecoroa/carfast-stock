@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <h2>📦 Gestão de Stock</h2>
+  <a class="button secondary" href="{{ url_for('home') }}">Voltar ao início</a>
+</div>
+
+<div class="hub-grid">
+
+  <a class="hub-card" href="{{ url_for('index') }}">
+    <h3>Stock Atual</h3>
+    <p>Consultar artigos, quantidades e alertas de stock mínimo.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('novo_artigo') }}">
+    <h3>Novo Artigo</h3>
+    <p>Criar artigos, categorias, fornecedores e stock mínimo.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('novo_movimento') }}">
+    <h3>Novo Movimento</h3>
+    <p>Registar entradas, saídas e ajustes de stock.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('movimentos') }}">
+    <h3>Histórico de Movimentos</h3>
+    <p>Consultar todos os movimentos registados.</p>
+  </a>
+
+</div>
+
+{% endblock %}

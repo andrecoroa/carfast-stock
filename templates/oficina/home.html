@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <h2>🔧 Gestão de Manutenção</h2>
+  <a class="button secondary" href="{{ url_for('home') }}">Voltar ao início</a>
+</div>
+
+<div class="hub-grid">
+
+  <a class="hub-card" href="{{ url_for('processos') }}">
+    <h3>Processos</h3>
+    <p>Consultar processos de oficina, estados e evolução.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('novo_processo') }}">
+    <h3>Novo Processo</h3>
+    <p>Abrir processo com Nº Impro, matrícula, KM e problema inicial.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('viaturas') }}">
+    <h3>Viaturas</h3>
+    <p>Consultar fichas, histórico técnico e diagnósticos por matrícula.</p>
+  </a>
+
+</div>
+
+{% endblock %}
