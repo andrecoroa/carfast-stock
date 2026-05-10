@@ -29,12 +29,6 @@
     <p>Auditoria, custos, contratos, faturas, históricos Rentway e relatórios.</p>
   </a>
 
-  <a class="hub-card" href="{{ url_for('conhecimento_index') }}">
-    <div class="hub-icon">?</div>
-    <h2>Centro de Conhecimento</h2>
-    <p>Manual operacional vivo, procedimentos, explicações e boas práticas da app.</p>
-  </a>
-
   {% if current_user.role == 'Admin' %}
     <a class="hub-card" href="{{ url_for('admin_home') }}">
       <div class="hub-icon">⚙</div>
