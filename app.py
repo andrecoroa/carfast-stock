@@ -656,7 +656,17 @@ def column_exists(conn, table, column):
     return any(r[1] == column for r in rows)
 
 
+def table_exists(conn, table):
+    row = conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?",
+        (table,),
+    ).fetchone()
+    return row is not None
+
+
 def ensure_columns(conn, table, columns):
+    if not table_exists(conn, table):
+        return
     for col, sql_type in columns.items():
         if not column_exists(conn, table, col):
             conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {sql_type}")
@@ -1387,13 +1397,6 @@ def init_db():
             criado_em TEXT NOT NULL
         )
         """)
-        ensure_columns(c, "centro_tarefas_anexos", {
-            "document_id": "INTEGER",
-            "file_type": "TEXT",
-            "file_size": "INTEGER",
-            "sharepoint_url": "TEXT",
-            "category": "TEXT",
-        })
 
         c.execute("""
         CREATE TABLE IF NOT EXISTS centro_tarefas_anexos (
@@ -1405,6 +1408,13 @@ def init_db():
             carregado_em TEXT NOT NULL
         )
         """)
+        ensure_columns(c, "centro_tarefas_anexos", {
+            "document_id": "INTEGER",
+            "file_type": "TEXT",
+            "file_size": "INTEGER",
+            "sharepoint_url": "TEXT",
+            "category": "TEXT",
+        })
 
         c.execute("""
         CREATE TABLE IF NOT EXISTS viaturas (
