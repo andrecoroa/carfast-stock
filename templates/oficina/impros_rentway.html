@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h2>Histórico de Impros Rentway</h2>
+  <a class="button" href="{{ url_for('importar_impros_view') }}">Importar impros</a>
+</div>
+
+<div class="summary-grid">
+  <div class="summary-card"><strong>Total impros</strong><span>{{ resumo.total or 0 }}</span></div>
+  <div class="summary-card"><strong>Viaturas</strong><span>{{ resumo.viaturas or 0 }}</span></div>
+  <div class="summary-card"><strong>Com oficina</strong><span>{{ resumo.com_oficina or 0 }}</span></div>
+</div>
+
+<form method="get" class="filter-form">
+  <div class="grid">
+    <label>Pesquisa
+      <input name="q" value="{{ filtros.q }}" placeholder="Impro, matricula, condutor ou oficina">
+    </label>
+    <label>Matricula
+      <input name="matricula" value="{{ filtros.matricula }}">
+    </label>
+    <label>Estacao out
+      <select name="estacao">
+        <option value="">Todas</option>
+        {% for e in estacoes %}
+          <option value="{{ e.estacao_out }}" {% if filtros.estacao == e.estacao_out %}selected{% endif %}>{{ e.estacao_out }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+  <button type="submit">Filtrar</button>
+  <a class="button secondary" href="{{ url_for('impros_rentway') }}">Limpar</a>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      <th>Impro</th>
+      <th>Matricula</th>
+      <th>Viatura</th>
+      <th>Grupo</th>
+      <th>Data fecho</th>
+      <th>Estacao out</th>
+      <th>Data out</th>
+      <th>Driven kms</th>
+      <th>Oficina</th>
+      <th>Condutor</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in impros %}
+      <tr>
+        <td>{{ i.numero_impro or '' }}</td>
+        <td>{{ i.matricula or '' }}</td>
+        <td>{{ i.marca or '' }} {{ i.modelo or '' }}</td>
+        <td>{{ i.grupo or '' }}</td>
+        <td>{{ i.data_fecho or i.data_in or '' }}</td>
+        <td>{{ i.estacao_out or i.estacao or '' }}</td>
+        <td>{{ i.data_out or '' }}</td>
+        <td>{{ i.driven_kms or i.km or '' }}</td>
+        <td>{{ i.oficina or '' }}</td>
+        <td>{{ i.condutor or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="10">Sem impros importados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p class="muted">Mostra no maximo 500 registos por pesquisa.</p>
+{% endblock %}

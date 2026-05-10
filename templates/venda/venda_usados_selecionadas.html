@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Venda de Usados — Viaturas Selecionadas</h2>
+    <p class="muted">Revê valores, ajusta preços e aprova para exportação.</p>
+  </div>
+  <div>
+    <a class="button secondary" href="{{ url_for('venda_usados') }}">Selecionar Viaturas</a>
+    <a class="button" href="{{ url_for('venda_usados_exportar') }}">Exportar Listagem</a>
+  </div>
+</div>
+
+<div class="document-list">
+  {% for v in viaturas %}
+    <details class="document-panel" {% if v.estado_venda in ['Selecionada','Em análise','Aprovada'] %}open{% endif %}>
+      <summary>
+        <span class="doc-main">
+          <strong>{{ v.matricula }}</strong>
+          <span>{{ v.marca or '' }} {{ v.modelo or '' }} {{ v.versao or '' }}</span>
+        </span>
+        <span class="doc-meta">{{ v.ano or '' }}</span>
+        <span class="doc-meta">{{ v.km_atual or '' }} km</span>
+        <span class="doc-services"><span class="service-badge">{{ v.estado_venda }}</span></span>
+        <span class="doc-lines">{{ v.fornecedor_financeiro or 'Sem fornecedor' }}</span>
+        <span class="doc-total">{{ v.valor_atual_teorico or 0 }}</span>
+      </summary>
+
+      <form method="post" action="{{ url_for('venda_usados_editar', venda_id=v.id) }}" class="filter-form">
+        <div class="grid">
+          <label>Fornecedor financeiro <input value="{{ v.fornecedor_financeiro or '' }}" disabled></label>
+          <label>Próxima revisão <input value="{{ v.proxima_revisao or '' }}" disabled></label>
+          <label>Valor aquisição <input name="valor_aquisicao" type="number" step="0.01" value="{{ v.valor_aquisicao or '' }}"></label>
+          <label>Data aquisição <input name="data_aquisicao" type="date" value="{{ v.data_aquisicao or '' }}"></label>
+          <label>Meses depreciação <input value="{{ v.meses_depreciacao or 0 }}" disabled></label>
+          <label>Depreciação mensal <input value="{{ v.depreciacao_mensal or 0 }}" disabled></label>
+          <label>Depreciação acumulada <input value="{{ v.depreciacao_acumulada or 0 }}" disabled></label>
+          <label>Valor atual teórico <input value="{{ v.valor_atual_teorico or 0 }}" disabled></label>
+          <label>Preço sugerido <input name="preco_sugerido" type="number" step="0.01" value="{{ v.preco_sugerido or '' }}"></label>
+          <label>Preço mínimo <input name="preco_minimo" type="number" step="0.01" value="{{ v.preco_minimo or '' }}"></label>
+          <label>Preço comércio <input name="preco_comercio" type="number" step="0.01" value="{{ v.preco_comercio or '' }}"></label>
+          <label>Estado venda
+            <select name="estado_venda">
+              {% for e in estados %}
+                <option value="{{ e }}" {% if v.estado_venda == e %}selected{% endif %}>{{ e }}</option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
+        <label>Observações <textarea name="observacoes">{{ v.observacoes or '' }}</textarea></label>
+        <button>Guardar</button>
+      </form>
+
+      <div class="inline-actions">
+        <form method="post" action="{{ url_for('venda_usados_marcar_exportada', venda_id=v.id) }}" class="mini-form">
+          <button>Marcar exportada</button>
+        </form>
+        <form method="post" action="{{ url_for('venda_usados_remover', venda_id=v.id) }}" class="mini-form">
+          <button class="button secondary">Remover seleção</button>
+        </form>
+      </div>
+    </details>
+  {% else %}
+    <div class="empty-state">Ainda não há viaturas selecionadas para venda.</div>
+  {% endfor %}
+</div>
+
+{% endblock %}

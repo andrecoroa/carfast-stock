@@ -1,0 +1,23 @@
+.badge,
+.state-badge,
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 12px;
+  font-weight: 850;
+  background: #f1f5f9;
+  color: #475569;
+}
+.badge.soft { background: #eef2ff; color: #3730a3; }
+.state-em-execução,.state-em-execucao{background:#dbeafe;color:#1d4ed8}
+.state-respondido{background:#fef3c7;color:#92400e}
+.state-em-análise,.state-em-analise{background:#ffedd5;color:#c2410c}
+.state-resolvido,.state-concluído,.state-concluido{background:#dcfce7;color:#15803d}
+.state-aceite{background:#ccfbf1;color:#0f766e}
+.state-rejeitada{background:#fee2e2;color:#b91c1c}
+.priority-urgente{background:#fee2e2;color:#b91c1c}
+.priority-alta{background:#ffedd5;color:#c2410c}
+.priority-média,.priority-media{background:#dbeafe;color:#1d4ed8}
+.priority-baixa{background:#f1f5f9;color:#475569}

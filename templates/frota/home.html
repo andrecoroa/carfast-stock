@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Frota</h2>
+    <p class="muted">Entidade permanente da viatura, histórico, incidentes, timeline e venda.</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('home') }}">Voltar ao início</a>
+</div>
+
+<div class="hub-grid">
+
+  <a class="hub-card" href="{{ url_for('viaturas') }}">
+    <h3>Viaturas</h3>
+    <p>Consultar frota, filtros, estados, ficha completa e histórico por matrícula.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('importar_frota_view') }}">
+    <h3>Importar Frota Rentway</h3>
+    <p>Atualizar a frota completa a partir do relatório integral do Rentway.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('auditoria_viatura_timeline') }}">
+    <h3>Timeline da Viatura</h3>
+    <p>Ver contratos, impros, documentos, custos e diagnósticos numa linha temporal.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('incidentes_frota') }}">
+    <h3>Incidentes Frota</h3>
+    <p>Registar e acompanhar problemas de viaturas, oficinas, clientes e preparação.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('tarefas_frota') }}">
+    <h3>Tarefas Frota</h3>
+    <p>Acompanhar follow-up gerado por incidentes específicos da frota.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('venda_usados') }}">
+    <h3>Venda de Usados</h3>
+    <p>Selecionar viaturas da frota, rever valores e exportar listagem para comércio.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('venda_usados_selecionadas') }}">
+    <h3>Viaturas Selecionadas</h3>
+    <p>Rever preços, estado de venda, observações e exportação comercial.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('sinistros_allianz') }}">
+    <h3>Sinistros com participação</h3>
+    <p>Consultar sinistros por matrícula, data, causa, custo e estado.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('ars_rentway') }}">
+    <h3>ARs Rentway</h3>
+    <p>Consultar accident reports, acidentes, reparações e documentos associados.</p>
+  </a>
+
+</div>
+
+{% endblock %}

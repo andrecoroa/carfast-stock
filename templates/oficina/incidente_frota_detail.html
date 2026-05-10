@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Incidente #{{ incidente.id }} — {{ incidente.matricula }}</h2>
+    <p class="muted">{{ incidente.categoria_nome }} · {{ incidente.classificacao_nome }}</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('incidentes_frota') }}">Voltar</a>
+</div>
+
+<div class="cards">
+  <div class="card">
+    <h3>Resumo</h3>
+    <p><strong>Viatura:</strong> <a href="{{ url_for('viatura_detail', viatura_id=incidente.viatura_id) }}">{{ incidente.matricula }}</a> — {{ incidente.marca or '' }} {{ incidente.modelo or '' }}</p>
+    <p><strong>Estado:</strong> <span class="badge">{{ incidente.estado }}</span></p>
+    <p><strong>Gravidade:</strong> {{ incidente.gravidade }}</p>
+    <p><strong>Faturável:</strong> {{ incidente.faturavel }}</p>
+    <p><strong>Valor estimado:</strong> {{ incidente.valor_estimado or '' }}</p>
+    <p><strong>Criado em:</strong> {{ incidente.criado_em }}</p>
+  </div>
+  <div class="card">
+    <h3>Entidades</h3>
+    <p><strong>Cliente:</strong> {{ incidente.cliente or '' }}</p>
+    <p><strong>Oficina / Marca:</strong> {{ incidente.oficina_marca or '' }}</p>
+    <p><strong>Contrato:</strong> {{ incidente.contrato_id or '' }}</p>
+    <p><strong>Processo:</strong> {{ incidente.processo_id or '' }}</p>
+    <p><strong>Origem:</strong> {{ incidente.origem or '' }}</p>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Descrição</h3>
+  <p>{{ incidente.descricao }}</p>
+  {% if incidente.acao_necessaria %}
+    <h4>Ação necessária</h4>
+    <p>{{ incidente.acao_necessaria }}</p>
+  {% endif %}
+  {% if incidente.instrucoes %}
+    <h4>Instruções da classificação</h4>
+    <p>{{ incidente.instrucoes }}</p>
+  {% endif %}
+</div>
+
+<form method="post" action="{{ url_for('atualizar_incidente_frota_estado', incidente_id=incidente.id) }}">
+  <h3>Atualizar follow-up</h3>
+  <div class="grid">
+    <label>Estado
+      <select name="estado">
+        {% for e in estados %}
+          <option value="{{ e }}" {% if incidente.estado == e %}selected{% endif %}>{{ e }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Responsável <input name="responsavel_followup" value="{{ incidente.responsavel_followup or '' }}"></label>
+  </div>
+  <label>Ação necessária <textarea name="acao_necessaria">{{ incidente.acao_necessaria or '' }}</textarea></label>
+  <button>Atualizar incidente</button>
+</form>
+
+<h3>Tarefas geradas</h3>
+<table>
+  <thead><tr><th>Título</th><th>Prioridade</th><th>Estado</th><th>Limite</th><th>Responsável</th><th></th></tr></thead>
+  <tbody>
+    {% for t in tarefas %}
+      <tr>
+        <td>{{ t.titulo }}</td>
+        <td>{{ t.prioridade }}</td>
+        <td>{{ t.estado }}</td>
+        <td>{{ t.data_limite or '' }}</td>
+        <td>{{ t.responsavel or '' }}</td>
+        <td>
+          <form class="mini-form" method="post" action="{{ url_for('atualizar_tarefa_frota_estado', tarefa_id=t.id) }}">
+            <input type="hidden" name="responsavel" value="{{ t.responsavel or '' }}">
+            <select name="estado">
+              {% for e in tarefa_estados %}
+                <option value="{{ e }}" {% if t.estado == e %}selected{% endif %}>{{ e }}</option>
+              {% endfor %}
+            </select>
+            <button>OK</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6">Este incidente não gerou tarefas.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Anexos</h3>
+<table>
+  <thead><tr><th>Tipo</th><th>Ficheiro</th><th>Carregado por</th><th>Data</th></tr></thead>
+  <tbody>
+    {% for a in anexos %}
+      <tr>
+        <td>{{ a.tipo_anexo or '' }}</td>
+        <td><a href="{{ url_for('uploaded_file', filename=a.filename) }}">{{ a.original_name }}</a></td>
+        <td>{{ a.carregado_por or '' }}</td>
+        <td>{{ a.carregado_em }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="4">Sem anexos.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

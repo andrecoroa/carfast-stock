@@ -1,1 +1,432 @@
-{% extends "base.html" %}{% block content %}<h2>Ficha viatura — {{ v.matricula }}</h2><form method="post"><div class="grid"><label>VIN <input name="vin" value="{{ v.vin or '' }}"></label><label>Marca <input name="marca" value="{{ v.marca or '' }}"></label><label>Modelo <input name="modelo" value="{{ v.modelo or '' }}"></label><label>Versão <input name="versao" value="{{ v.versao or '' }}"></label><label>Motorização <input name="motorizacao" value="{{ v.motorizacao or '' }}"></label><label>Combustível <input name="combustivel" value="{{ v.combustivel or '' }}"></label><label>Caixa <input name="caixa" value="{{ v.caixa or '' }}"></label><label>Ano <input name="ano" type="number" value="{{ v.ano or '' }}"></label><label>Data compra <input name="data_compra" type="date" value="{{ v.data_compra or '' }}"></label><label>KM atual <input name="km_atual" type="number" value="{{ v.km_atual or '' }}"></label><label>Próxima revisão KM <input name="proxima_revisao_km" type="number" value="{{ v.proxima_revisao_km or '' }}"></label><label>Próxima revisão data <input name="proxima_revisao_data" type="date" value="{{ v.proxima_revisao_data or '' }}"></label><label>Última revisão <input name="ultima_revisao" type="date" value="{{ v.ultima_revisao or '' }}"></label><label>Risco técnico<select name="risco_tecnico"><option>Normal</option><option>Atenção</option><option>Crítico</option></select></label></div><label><input type="checkbox" name="campanhas_pendentes" {% if v.campanhas_pendentes %}checked{% endif %}> Campanhas pendentes</label><label><input type="checkbox" name="ativo" {% if v.ativo %}checked{% endif %}> Ativa</label><label>Observações <textarea name="observacoes">{{ v.observacoes or '' }}</textarea></label><button>Guardar ficha</button></form><h3>Processos</h3><table><thead><tr><th>Impro</th><th>Estado</th><th>Abertura</th><th></th></tr></thead><tbody>{% for p in processos %}<tr><td>{{ p.numero_impro }}</td><td>{{ p.estado }}</td><td>{{ p.data_abertura }}</td><td><a href="{{ url_for('processo_detail', processo_id=p.id) }}">abrir</a></td></tr>{% endfor %}</tbody></table><h3>Diagnósticos</h3><table><thead><tr><th>Impro</th><th>Tipo</th><th>Data</th><th>KM</th><th>Diluição</th><th>Carbono</th></tr></thead><tbody>{% for d in diagnosticos %}<tr><td>{{ d.numero_impro }}</td><td>{{ d.tipo }}</td><td>{{ d.data_diagnostico }}</td><td>{{ d.km_diagnostico or '' }}</td><td>{{ d.diluicao_oleo or '' }}</td><td>{{ d.carbono_oleo or '' }}</td></tr>{% endfor %}</tbody></table>{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<h2>Ficha viatura - {{ v.matricula }}</h2>
+
+<form method="post">
+  <h3>Identificacao</h3>
+  <div class="grid">
+    <label>ID Rentway <input value="{{ v.rentway_unitnr or '' }}" disabled></label>
+    <label>VIN <input name="vin" value="{{ v.vin or '' }}"></label>
+    <label>Marca <input name="marca" value="{{ v.marca or '' }}"></label>
+    <label>Modelo <input name="modelo" value="{{ v.modelo or '' }}"></label>
+    <label>Versao <input name="versao" value="{{ v.versao or '' }}"></label>
+    <label>Motorizacao <input name="motorizacao" value="{{ v.motorizacao or '' }}"></label>
+    <label>Cor <input value="{{ v.cor or '' }}" disabled></label>
+    <label>Combustivel <input name="combustivel" value="{{ v.combustivel or '' }}"></label>
+    <label>Lugares <input value="{{ v.lugares or '' }}" disabled></label>
+    <label>Ano <input name="ano" type="number" value="{{ v.ano or '' }}"></label>
+    <label>Data matricula <input value="{{ v.data_matricula or '' }}" disabled></label>
+    <label>Documento Rentway <input value="{{ v.documento_rentway or '' }}" disabled></label>
+  </div>
+
+  <h3>Estados e localizacao</h3>
+  <div class="grid">
+    <label>Estado lifecycle
+      <select name="estado_frota">
+        {% for e in ['Ativa','Em venda','Vendida','Baixada','Abatida','Imobilizada'] %}
+          <option value="{{ e }}" {% if (v.estado_frota or 'Ativa') == e %}selected{% endif %}>{{ e }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Estado operacional <input name="estado_operacional" value="{{ v.estado_operacional or '' }}"></label>
+    <label>Estacao <input name="rental_station" value="{{ v.rental_station or '' }}"></label>
+    <label>Grupo <input name="grupo" value="{{ v.grupo or '' }}"></label>
+    <label>Categoria <input name="categoria" value="{{ v.categoria or '' }}"></label>
+    <label>Risco tecnico
+      <select name="risco_tecnico">
+        {% for r in ['Normal','Atencao','Critico'] %}
+          <option value="{{ r }}" {% if v.risco_tecnico == r %}selected{% endif %}>{{ r }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Bloqueio Rentway <input value="{{ v.bloqueio_rentway or '' }}" disabled></label>
+    <label>Data bloqueio <input value="{{ v.data_bloqueio or '' }}" disabled></label>
+    <label>Bloqueio peritagem <input value="{{ v.data_bloqueio_peritagem or '' }}" disabled></label>
+    <label>Ultimo movimento <input value="{{ v.data_ultimo_movimento or '' }}" disabled></label>
+    <label>CurrentStatus <input value="{{ v.current_status_rentway or '' }}" disabled></label>
+    <label>Status <input value="{{ v.status_rentway or '' }}" disabled></label>
+  </div>
+
+  <h3>KM, manutencao e documentos</h3>
+  <div class="grid">
+    <label>KM atual <input name="km_atual" type="number" value="{{ v.km_atual or '' }}"></label>
+    <label>KM compra <input value="{{ v.km_compra or '' }}" disabled></label>
+    <label>Ultima revisao data <input name="ultima_revisao" type="date" value="{{ v.ultima_revisao or '' }}"></label>
+    <label>Ultima revisao KM <input value="{{ v.ultima_revisao_km or '' }}" disabled></label>
+    <label>Proxima revisao data <input name="proxima_revisao_data" type="date" value="{{ v.proxima_revisao_data or '' }}"></label>
+    <label>Proxima revisao KM <input name="proxima_revisao_km" type="number" value="{{ v.proxima_revisao_km or '' }}"></label>
+    <label>Ultimo servico feito <input value="{{ v.ultimo_servico_feito or '' }}" disabled></label>
+    <label>Data inspecao <input value="{{ v.data_inspecao or '' }}" disabled></label>
+    <label>Fim garantia <input value="{{ v.garantia_fim or '' }}" disabled></label>
+    <label>DocumentNr <input value="{{ v.documentnr_rentway or '' }}" disabled></label>
+  </div>
+
+  <h3>Compra</h3>
+  <div class="grid">
+    <label>Data compra <input name="data_compra" type="date" value="{{ v.data_compra or '' }}"></label>
+    <label>Fornecedor <input value="{{ v.fornecedor or '' }}" disabled></label>
+    <label>Valor compra sem IVA <input value="{{ v.valor_compra or '' }}" disabled></label>
+    <label>IVA compra <input value="{{ v.iva_compra or '' }}" disabled></label>
+    <label>Valor IVA compra <input value="{{ v.valor_iva_compra or '' }}" disabled></label>
+    <label>Valor compra com IVA <input value="{{ v.valor_compra_com_iva or '' }}" disabled></label>
+  </div>
+
+  <h3>Venda</h3>
+  <div class="grid">
+    <label>Data venda <input name="data_venda" type="date" value="{{ v.data_venda or '' }}"></label>
+    <label>Comprador / cliente <input value="{{ v.comprador or '' }}" disabled></label>
+    <label>Programa venda <input value="{{ v.programa_venda or '' }}" disabled></label>
+    <label>Data retorno <input value="{{ v.data_retorno or '' }}" disabled></label>
+    <label>Preco venda Rentway <input value="{{ v.preco_venda_rentway or '' }}" disabled></label>
+    <label>Preco venda calculado <input name="preco_venda_calculado" type="number" step="0.01" value="{{ v.preco_venda_calculado or '' }}"></label>
+    <label>Preco retalho Rentway <input value="{{ v.preco_venda_retalho_rentway or '' }}" disabled></label>
+    <label>Preco retalho calculado <input name="preco_venda_retalho_calculado" type="number" step="0.01" value="{{ v.preco_venda_retalho_calculado or '' }}"></label>
+    <label>Valor venda sem IVA <input value="{{ v.valor_venda_sem_iva or '' }}" disabled></label>
+    <label>IVA venda <input value="{{ v.iva_venda or '' }}" disabled></label>
+    <label>Valor IVA venda <input value="{{ v.valor_iva_venda or '' }}" disabled></label>
+    <label>Valor venda com IVA <input name="valor_venda" type="number" step="0.01" value="{{ v.valor_venda or '' }}"></label>
+  </div>
+
+  <h3>Financiamento e fiscal</h3>
+  <div class="grid">
+    <label>Fornecedor financeiro <input value="{{ v.fornecedor_financeiro or '' }}" disabled></label>
+    <label>Contrato financeiro <input value="{{ v.contrato_financeiro or '' }}" disabled></label>
+    <label>Fim contrato financeiro <input value="{{ v.contrato_financeiro_fim or '' }}" disabled></label>
+    <label>ALD nr pagamentos <input value="{{ v.ald_nr_pagamentos or '' }}" disabled></label>
+    <label>ALD primeiro pagamento <input value="{{ v.ald_primeiro_pagamento or '' }}" disabled></label>
+    <label>ALD valor residual <input value="{{ v.ald_valor_residual or '' }}" disabled></label>
+    <label>Codigo fiscal depreciacao Rentway <input value="{{ v.depreciacao_codigo_fiscal_rentway or '' }}" disabled></label>
+    <label>Codigo fiscal depreciacao calculado <input name="depreciacao_codigo_fiscal_calculado" value="{{ v.depreciacao_codigo_fiscal_calculado or '' }}"></label>
+    <label>Ultima depreciacao Rentway <input value="{{ v.depreciacao_ultima_calculo_rentway or '' }}" disabled></label>
+    <label>Ultima depreciacao calculada <input name="depreciacao_ultima_calculo_calculado" value="{{ v.depreciacao_ultima_calculo_calculado or '' }}"></label>
+    <label>Codigo conta Rentway <input value="{{ v.codigo_conta_rentway or '' }}" disabled></label>
+    <label>Codigo conta calculado <input name="codigo_conta_calculado" value="{{ v.codigo_conta_calculado or '' }}"></label>
+  </div>
+
+  <h3>Alertas e utilizacao atual</h3>
+  <div class="grid">
+    <label>Cliente Rentway <input value="{{ v.cliente_rentway or '' }}" disabled></label>
+    <label>Cliente atual <input value="{{ v.cliente_atual_rentway or '' }}" disabled></label>
+    <label>Condutor atual <input value="{{ v.condutor_atual_rentway or '' }}" disabled></label>
+    <label>Aviso viatura <input value="{{ v.aviso_viatura or '' }}" disabled></label>
+    <label>Data declaracao furto <input value="{{ v.furto_data_declaracao or '' }}" disabled></label>
+    <label>Numero declaracao furto <input value="{{ v.furto_numero_declaracao or '' }}" disabled></label>
+  </div>
+
+  <label><input type="checkbox" name="campanhas_pendentes" {% if v.campanhas_pendentes %}checked{% endif %}> Campanhas pendentes</label>
+  <label><input type="checkbox" name="ativo" {% if v.ativo %}checked{% endif %}> Ativa</label>
+  <label>Observacoes <textarea name="observacoes">{{ v.observacoes or '' }}</textarea></label>
+  <button>Guardar ficha</button>
+</form>
+
+<h3>Processos</h3>
+<table>
+  <thead><tr><th>Impro</th><th>Estado</th><th>Abertura</th><th></th></tr></thead>
+  <tbody>
+    {% for p in processos %}
+      <tr><td>{{ p.numero_impro }}</td><td>{{ p.estado }}</td><td>{{ p.data_abertura }}</td><td><a href="{{ url_for('processo_detail', processo_id=p.id) }}">abrir</a></td></tr>
+    {% else %}
+      <tr><td colspan="4">Sem processos registados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Incidentes Frota</h3>
+<p><a class="button" href="{{ url_for('novo_incidente_frota') }}">Novo incidente frota</a></p>
+<table>
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Categoria</th>
+      <th>Classificação</th>
+      <th>Gravidade</th>
+      <th>Estado</th>
+      <th>Faturável</th>
+      <th>Responsável</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in incidentes_frota %}
+      <tr>
+        <td>{{ i.criado_em }}</td>
+        <td>{{ i.categoria_nome }}</td>
+        <td>{{ i.classificacao_nome }}</td>
+        <td>{{ i.gravidade }}</td>
+        <td>{{ i.estado }}</td>
+        <td>{{ i.faturavel }}</td>
+        <td>{{ i.responsavel_followup or '' }}</td>
+        <td><a href="{{ url_for('incidente_frota_detail', incidente_id=i.id) }}">abrir</a></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8">Sem incidentes de frota registados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Tarefas Frota associadas</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Título</th>
+      <th>Prioridade</th>
+      <th>Estado</th>
+      <th>Data limite</th>
+      <th>Responsável</th>
+      <th>Origem</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in tarefas_frota %}
+      <tr>
+        <td>{{ t.titulo }}</td>
+        <td>{{ t.prioridade }}</td>
+        <td>{{ t.estado }}</td>
+        <td>{{ t.data_limite or '' }}</td>
+        <td>{{ t.responsavel or '' }}</td>
+        <td>
+          {% if t.origem_tipo == 'incidente_frota' %}
+            <a href="{{ url_for('incidente_frota_detail', incidente_id=t.origem_id|int) }}">Incidente #{{ t.origem_id }}</a>
+          {% else %}
+            {{ t.origem_tipo or '' }}
+          {% endif %}
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6">Sem tarefas de frota associadas.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Histórico Rentway - Impros</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Impro</th>
+      <th>Data fecho</th>
+      <th>Estacao out</th>
+      <th>Data out</th>
+      <th>Driven kms</th>
+      <th>Oficina</th>
+      <th>Condutor</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in impros_rentway %}
+      <tr>
+        <td>{{ i.numero_impro or '' }}</td>
+        <td>{{ i.data_fecho or i.data_in or '' }}</td>
+        <td>{{ i.estacao_out or i.estacao or '' }}</td>
+        <td>{{ i.data_out or '' }}</td>
+        <td>{{ i.driven_kms or i.km or '' }}</td>
+        <td>{{ i.oficina or '' }}</td>
+        <td>{{ i.condutor or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7">Sem impros Rentway importados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Histórico Rentway - Folhas de Obra</h3>
+<table>
+  <thead>
+    <tr>
+      <th>FO</th>
+      <th>Data</th>
+      <th>Fornecedor</th>
+      <th>Natureza</th>
+      <th>Kms</th>
+      <th>Valor c/IVA</th>
+      <th>Descricao</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for f in folhas_obra_rentway %}
+      <tr>
+        <td>{{ f.folha_obra_origem or '' }}</td>
+        <td>{{ f.data_documento or '' }}</td>
+        <td>{{ f.fornecedor or '' }}</td>
+        <td>{{ f.natureza or '' }}</td>
+        <td>{{ f.kms or '' }}</td>
+        <td>{{ f.valor_com_iva or '' }}</td>
+        <td>{{ f.descricao or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7">Sem folhas de obra Rentway importadas.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Histórico Rentway - Contratos</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Contrato</th>
+      <th>Cliente</th>
+      <th>Data out</th>
+      <th>Data in</th>
+      <th>Origem</th>
+      <th>Grupo res.</th>
+      <th>Grupo entr.</th>
+      <th>Valor total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in contratos_viaturas %}
+      <tr>
+        <td>{{ c.contrato_nr or '' }}</td>
+        <td>{{ c.cliente_nome or '' }}</td>
+        <td>{{ c.data_out or '' }}</td>
+        <td>{{ c.data_in or '' }}</td>
+        <td>{{ c.origem or '' }}</td>
+        <td>{{ c.grupo_reservado or '' }}</td>
+        <td>{{ c.grupo_entregue or '' }}</td>
+        <td>{{ c.valor_total or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8">Sem contratos Rentway importados para esta viatura.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Faturas de Fornecedores</h3>
+<div class="document-list">
+  {% for doc in faturas_fornecedores_docs %}
+    {% set r = doc.resumo %}
+    <details class="document-panel vehicle-doc-panel">
+      <summary>
+        <span class="doc-main">
+          <strong>{{ r.titulo or 'Sem documento' }}</strong>
+          <span>{{ r.subtitulo or '' }}</span>
+        </span>
+        <span class="doc-meta">{{ r.meta_data or '' }}</span>
+        <span class="doc-meta" title="{{ r.meta_dois or '' }}">{{ r.meta_dois or 'Sem OR' }}</span>
+        <span class="doc-services">
+          {% for servico in doc.servicos %}
+            <span class="service-badge">{{ servico }}</span>
+          {% else %}
+            <span class="service-muted">Sem sinal</span>
+          {% endfor %}
+          {% if r.validar %}
+            <span class="service-badge warning-badge">{{ r.validar }} validar</span>
+          {% endif %}
+        </span>
+        <span class="doc-lines">{{ r.linhas or 0 }} linhas</span>
+        <span class="doc-total">{{ r.valor_total or 0 }}</span>
+      </summary>
+
+      <table class="compact-table supplier-invoices">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>OR</th>
+            <th>Descricao</th>
+            <th>Referencia</th>
+            <th>Qtd</th>
+            <th>Total liq.</th>
+            <th>CT</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in doc.linhas %}
+            <tr>
+              <td class="nowrap">{{ l.data_doc or '' }}</td>
+              <td class="nowrap">{{ l.or_reparacao or '' }}</td>
+              <td class="clip description-cell" title="{{ (l.descricao or '')|replace('\n', ' ') }}">
+                {{ (l.descricao or '')|replace('\n', ' ') }}
+              </td>
+              <td class="clip clip-sm" title="{{ l.referencia or '' }}">{{ l.referencia or '' }}</td>
+              <td class="number">{{ l.quantidade or '' }}</td>
+              <td class="number">{{ l.total_liq or '' }}</td>
+              <td class="nowrap">{{ l.ct or '' }}</td>
+              <td class="nowrap">{{ l.estado_importacao or '' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </details>
+  {% else %}
+    <div class="empty-state">Sem faturas de fornecedores importadas.</div>
+  {% endfor %}
+</div>
+
+<h3>Histórico Rentway - ARs</h3>
+<table>
+  <thead>
+    <tr>
+      <th>AR</th>
+      <th>Data</th>
+      <th>Tipo doc.</th>
+      <th>Nº doc.</th>
+      <th>Status</th>
+      <th>DAAA</th>
+      <th>Apolice</th>
+      <th>Estacao</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for ar in ars_rentway %}
+      <tr>
+        <td>{{ ar.accident_report_id or '' }}</td>
+        <td>{{ ar.accident_date or '' }}</td>
+        <td>{{ ar.document_type or '' }}</td>
+        <td>{{ ar.document_no or '' }}</td>
+        <td>{{ ar.status or '' }}</td>
+        <td>{{ ar.friendly_declaration or '' }}</td>
+        <td>{{ ar.insurance_policy or '' }}</td>
+        <td>{{ ar.rental_station_out or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8">Sem ARs Rentway importados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Sinistros com participação</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Referencia</th>
+      <th>Causa</th>
+      <th>Encerramento</th>
+      <th>RC</th>
+      <th>DP</th>
+      <th>Vidros</th>
+      <th>Total</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in sinistros_allianz %}
+      <tr>
+        <td>{{ s.data_sinistro or '' }}</td>
+        <td>{{ s.referencia_sinistro or '' }}</td>
+        <td>{{ s.causa or '' }}</td>
+        <td>{{ s.data_encerramento or '' }}</td>
+        <td>{{ s.valor_rc or '' }}</td>
+        <td>{{ s.valor_dp or '' }}</td>
+        <td>{{ s.valor_vidros or '' }}</td>
+        <td>{{ s.custo_total or '' }}</td>
+        <td>{{ s.estado_importacao or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="9">Sem sinistros Allianz importados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Diagnosticos</h3>
+<table>
+  <thead><tr><th>Impro</th><th>Tipo</th><th>Data</th><th>KM</th><th>Diluicao</th><th>Carbono</th></tr></thead>
+  <tbody>
+    {% for d in diagnosticos %}
+      <tr><td>{{ d.numero_impro }}</td><td>{{ d.tipo }}</td><td>{{ d.data_diagnostico }}</td><td>{{ d.km_diagnostico or '' }}</td><td>{{ d.diluicao_oleo or '' }}</td><td>{{ d.carbono_oleo or '' }}</td></tr>
+    {% else %}
+      <tr><td colspan="6">Sem diagnosticos registados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

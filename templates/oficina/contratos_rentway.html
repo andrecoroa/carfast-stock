@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h2>Contratos Rentway</h2>
+  <a class="button" href="{{ url_for('importar_contratos_rentway_view') }}">Importar contratos</a>
+</div>
+
+<div class="summary-grid">
+  <div class="summary-card"><strong>Contratos fin.</strong><span>{{ resumo.contratos or 0 }}</span></div>
+  <div class="summary-card"><strong>Mov. viaturas</strong><span>{{ resumo_viaturas.movimentos or 0 }}</span></div>
+  <div class="summary-card"><strong>Contratos c/ viaturas</strong><span>{{ resumo_viaturas.contratos_operacionais or 0 }}</span></div>
+  <div class="summary-card"><strong>Valor total</strong><span>{{ resumo.valor_total or 0 }}</span></div>
+  <div class="summary-card"><strong>Dias</strong><span>{{ resumo.dias_total or 0 }}</span></div>
+  <div class="summary-card"><strong>A validar</strong><span>{{ resumo_viaturas.validar or 0 }}</span></div>
+</div>
+
+<form method="get" class="filter-form">
+  <div class="grid">
+    <label>Pesquisa
+      <input name="q" value="{{ filtros.q }}" placeholder="Contrato, matricula, cliente ou origem">
+    </label>
+    <label>Matricula
+      <input name="matricula" value="{{ filtros.matricula }}">
+    </label>
+    <label>Cliente
+      <input name="cliente" value="{{ filtros.cliente }}">
+    </label>
+    <label>Origem
+      <select name="origem">
+        <option value="">Todas</option>
+        {% for o in origens %}
+          <option value="{{ o.origem }}" {% if filtros.origem == o.origem %}selected{% endif %}>{{ o.origem }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+  <button type="submit">Filtrar</button>
+  <a class="button secondary" href="{{ url_for('contratos_rentway') }}">Limpar</a>
+</form>
+
+<div class="document-list">
+  {% for c in contratos %}
+    <details class="document-panel">
+      <summary>
+        <span class="doc-main">
+          <strong>Contrato {{ c.contrato_nr }}</strong>
+          <span>{{ c.cliente_nome or ('Cliente ID ' ~ c.cliente_id) }}</span>
+        </span>
+        <span class="doc-meta">{{ c.data_out or '' }}</span>
+        <span class="doc-meta" title="{{ c.matriculas_reais or '' }}">{{ c.matriculas_reais or c.matricula_final or 'Sem matricula' }}</span>
+        <span class="doc-meta">{{ c.origem or '' }}</span>
+        <span class="doc-lines">{{ c.movimentos or 0 }} mov.</span>
+        <span class="doc-total">{{ c.valor_total or 0 }}</span>
+      </summary>
+
+      <div class="contract-detail-grid">
+        <div><strong>Data in</strong><span>{{ c.data_in or '' }}</span></div>
+        <div><strong>Dias</strong><span>{{ c.dias or '' }}</span></div>
+        <div><strong>Valor dia</strong><span>{{ c.valor_dia or '' }}</span></div>
+        <div><strong>Grupo reservado</strong><span>{{ c.grupo_reservado or '' }}</span></div>
+        <div><strong>Grupo entregue</strong><span>{{ c.grupo_entregue or '' }}</span></div>
+        <div><strong>Matricula final</strong><span>{{ c.matricula_final or '' }}</span></div>
+        <div><strong>Tipo cliente</strong><span>{{ c.tipo_cliente or '' }}</span></div>
+        <div><strong>Vendedor</strong><span>{{ c.nome_vendedor or c.vendedor or '' }}</span></div>
+      </div>
+
+      <table class="compact-table contract-vehicles">
+        <thead>
+          <tr>
+            <th>Data out</th>
+            <th>Data in</th>
+            <th>Matricula</th>
+            <th>Cliente</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in movimentos_por_contrato.get(c.contrato_nr, []) %}
+            <tr>
+              <td class="nowrap">{{ m.data_out or '' }}</td>
+              <td class="nowrap">{{ m.data_in or '' }}</td>
+              <td class="nowrap">{{ m.matricula or '' }}</td>
+              <td class="clip clip-sm" title="{{ m.cliente_nome or '' }}">{{ m.cliente_nome or '' }}</td>
+              <td>{{ m.estado_importacao or '' }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="5">Sem movimentos de viatura importados para este contrato.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </details>
+  {% else %}
+    <div class="empty-state">Sem contratos importados.</div>
+  {% endfor %}
+</div>
+
+<p class="muted">Mostra no maximo 500 contratos por pesquisa. A matricula financeira e apenas a matricula final; o detalhe mostra as viaturas reais quando existem.</p>
+{% endblock %}

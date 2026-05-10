@@ -1,0 +1,32 @@
+<aside class="sidebar" id="appSidebar">
+  <div class="brand">
+    <span>CAR</span>
+    <div>
+      <strong>CarFast</strong>
+      <small>Premium Rent-a-Car</small>
+    </div>
+  </div>
+
+  <nav class="side-nav" aria-label="Menu principal">
+    <a class="nav-item {% if request.endpoint == 'home' %}active{% endif %}" href="{{ url_for('home') }}"><span>⌂</span>Dashboard</a>
+    <a class="nav-item {% if request.endpoint and request.endpoint.startswith('centro_tarefa') %}active{% endif %}" href="{{ url_for('centro_tarefas') }}"><span>◎</span>Comunicação e tarefas</a>
+    <a class="nav-item {% if request.endpoint in ['manutencao_home','processos','novo_processo','stock_home','index','novo_artigo','novo_movimento','movimentos','importar_diagnosticos_pdf_view'] or (request.endpoint and (request.endpoint.startswith('protocolos') or request.endpoint in ['processo_detail','processo_checklist','rececao','diagnostico','validacao','comparacao'])) %}active{% endif %}" href="{{ url_for('manutencao_home') }}"><span>↻</span>Oficina</a>
+    <a class="nav-item {% if request.endpoint in ['frota_home','viaturas','viatura_detail','importar_frota_view','incidentes_frota','novo_incidente_frota','incidente_frota_detail','tarefas_frota','auditoria_viatura_timeline','venda_usados','venda_usados_selecionadas','venda_usados_exportar'] %}active{% endif %}" href="{{ url_for('frota_home') }}"><span>▦</span>Frota</a>
+    <a class="nav-item {% if request.endpoint in ['gestao_home','auditoria_home','impros_rentway','importar_impros_view','folhas_obra_rentway','importar_folhas_obra_view','sinistros_allianz','importar_sinistros_allianz_view','ars_rentway','importar_ars_rentway_view','faturas_fornecedores','importar_faturas_fornecedores_view','contratos_rentway','importar_contratos_rentway_view'] %}active{% endif %}" href="{{ url_for('gestao_home') }}"><span>▤</span>Gestão</a>
+    {% if current_user.role == 'Admin' %}
+      <a class="nav-item {% if request.endpoint in ['admin_home','users','novo_user','incidentes_classificacoes','nova_classificacao_incidente'] %}active{% endif %}" href="{{ url_for('admin_home') }}"><span>⚙</span>Administração e configurações</a>
+    {% endif %}
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <strong>{{ current_user.nome }}</strong>
+      <span>{{ current_user.role }}{% if current_user.departamento %} · {{ current_user.departamento }}{% endif %}</span>
+    </div>
+    <div class="sidebar-meta">
+      <span>Estação ativa</span>
+      <strong>Operational Hub</strong>
+    </div>
+    <a class="sidebar-logout" href="{{ url_for('logout') }}">Logout</a>
+  </div>
+</aside>

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Regras de Protocolo</h2>
+    <p class="muted">Critérios que definem que checklist é aplicada a cada processo.</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('protocolos_home') }}">Voltar</a>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Regra</th>
+      <th>Marca</th>
+      <th>Modelo</th>
+      <th>Motorização</th>
+      <th>Combustível</th>
+      <th>Tipo intervenção</th>
+      <th>Campos</th>
+      <th>Anexos</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in regras %}
+      <tr>
+        <td><strong>{{ r.nome_regra }}</strong></td>
+        <td>{{ r.marca or 'Todas' }}</td>
+        <td>{{ r.modelo or 'Todos' }}</td>
+        <td>{{ r.motorizacao or 'Todas' }}</td>
+        <td>{{ r.combustivel or 'Todos' }}</td>
+        <td>{{ r.tipo_intervencao or 'Todos' }}</td>
+        <td>{{ r.total_campos or 0 }} / {{ r.obrigatorios or 0 }} obrigatórios</td>
+        <td>{{ r.anexos or 0 }}</td>
+        <td><a class="button secondary" href="{{ url_for('protocolo_regra_detail', regra_id=r.id) }}">Abrir</a></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="9">Ainda não existem regras.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

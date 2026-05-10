@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <h2>Importar diagnosticos PDF</h2>
+  <a class="button secondary" href="{{ url_for('manutencao_home') }}">Voltar a manutencao</a>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="filter-form">
+  <div class="grid">
+    <label>Pasta local com PDFs
+      <input name="pasta" placeholder="C:\...\PDFs_renomeados_20260508_012321">
+    </label>
+    <label>Responsavel
+      <input name="responsavel" placeholder="Quem fez a importacao">
+    </label>
+  </div>
+  <p class="muted">Se indicares uma pasta, a aplicacao importa todos os PDFs dessa pasta. Em alternativa, podes carregar ficheiros abaixo.</p>
+  <label>PDFs
+    <input type="file" name="ficheiros" accept=".pdf" multiple>
+  </label>
+  <button type="submit">Importar diagnosticos</button>
+</form>
+
+<div class="summary-grid">
+  <div class="summary-card"><strong>O que extrai</strong><span>PDF</span><small>VIN, matricula, data, KM, numero de relatorio e texto tecnico.</small></div>
+  <div class="summary-card"><strong>Onde entra</strong><span>Diag.</span><small>Cria diagnostico historico e processo fechado automatico.</small></div>
+  <div class="summary-card"><strong>Timeline</strong><span>Auto</span><small>Depois aparece na ficha da viatura e no calendario operacional.</small></div>
+</div>
+
+<h3>Ultimas importacoes</h3>
+<table class="compact-table">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Origem</th>
+      <th>Total</th>
+      <th>Criados</th>
+      <th>Atualizados</th>
+      <th>Ignorados</th>
+      <th>Obs.</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in importacoes %}
+      <tr>
+        <td>{{ i.criado_em }}</td>
+        <td class="clip" title="{{ i.original_name or i.filename }}">{{ i.original_name or i.filename }}</td>
+        <td class="number">{{ i.total_linhas or 0 }}</td>
+        <td class="number">{{ i.criadas or 0 }}</td>
+        <td class="number">{{ i.atualizadas or 0 }}</td>
+        <td class="number">{{ i.ignoradas or 0 }}</td>
+        <td>{{ i.observacoes or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7">Ainda sem importacoes de diagnosticos PDF.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

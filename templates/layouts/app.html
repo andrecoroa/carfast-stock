@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}CarFast Hub Operacional{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+{% if current_user %}
+  <div class="app-shell" data-sidebar-state="open">
+    {% include "components/sidebar.html" %}
+    <div class="main-shell">
+      {% include "components/header.html" %}
+      <main>
+{% else %}
+  <main class="auth-main">
+{% endif %}
+    {% include "components/flash.html" %}
+    {% include "components/context_help.html" %}
+    {% block content %}{% endblock %}
+  </main>
+{% if current_user %}
+    </div>
+  </div>
+{% endif %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

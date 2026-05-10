@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Biblioteca de Campos</h2>
+    <p class="muted">{{ total }} campos ativos disponíveis para protocolos.</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('protocolos_home') }}">Voltar</a>
+</div>
+
+{% for fase in fases %}
+  <h3>{{ fase.nome }}</h3>
+  <table class="compact-table">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Campo</th>
+        <th>Categoria</th>
+        <th>Tipo</th>
+        <th>Obrigatório base</th>
+        <th>Anexo</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for campo in fase.campos %}
+        <tr>
+          <td><code>{{ campo.codigo_campo }}</code></td>
+          <td><strong>{{ campo.nome_campo }}</strong></td>
+          <td>{{ campo.categoria }}</td>
+          <td>{{ campo.tipo_campo }}</td>
+          <td>{{ 'Sim' if campo.obrigatorio_default else 'Não' }}</td>
+          <td>{{ 'Sim' if campo.aceita_anexo else 'Não' }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endfor %}
+
+{% endblock %}

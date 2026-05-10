@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Motor de Protocolos</h2>
+    <p class="muted">Biblioteca dinâmica de fases, campos e regras de manutenção.</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('manutencao_home') }}">Voltar à oficina</a>
+</div>
+
+<div class="summary-grid">
+  <div class="summary-card"><strong>Fases</strong><span>{{ stats.fases }}</span></div>
+  <div class="summary-card"><strong>Campos ativos</strong><span>{{ stats.campos }}</span></div>
+  <div class="summary-card"><strong>Regras</strong><span>{{ stats.regras }}</span></div>
+  <div class="summary-card"><strong>Processos com motor</strong><span>{{ stats.processos }}</span></div>
+</div>
+
+<div class="hub-grid">
+  <a class="hub-card" href="{{ url_for('protocolos_campos') }}">
+    <h3>Biblioteca de Campos</h3>
+    <p>Ver todos os campos possíveis, fase, categoria, tipo e obrigatoriedade base.</p>
+  </a>
+  <a class="hub-card" href="{{ url_for('protocolos_regras') }}">
+    <h3>Regras de Protocolo</h3>
+    <p>Consultar os protocolos aplicáveis por marca, motorização, grupo, KM e intervenção.</p>
+  </a>
+  <a class="hub-card" href="{{ url_for('processos') }}">
+    <h3>Checklists por Processo</h3>
+    <p>Abrir um processo e preencher a checklist dinâmica gerada pela regra aplicável.</p>
+  </a>
+</div>
+
+<h3>Regras ativas</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Regra</th>
+      <th>Critérios</th>
+      <th>Campos</th>
+      <th>Obrigatórios</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in regras %}
+      <tr>
+        <td><strong>{{ r.nome_regra }}</strong></td>
+        <td>{{ r.marca or 'Todas' }} · {{ r.motorizacao or 'Qualquer motor' }} · {{ r.combustivel or 'Qualquer combustível' }}</td>
+        <td>{{ r.total_campos or 0 }}</td>
+        <td>{{ r.obrigatorios or 0 }}</td>
+        <td><a class="button secondary" href="{{ url_for('protocolo_regra_detail', regra_id=r.id) }}">Abrir</a></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5">Ainda não existem regras.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

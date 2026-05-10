@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Tarefas Frota</h2>
+    <p class="muted">Follow-up gerado por incidentes da frota.</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('incidentes_frota') }}">Incidentes Frota</a>
+</div>
+
+<form method="get" class="filter-form">
+  <div class="grid">
+    <label>Estado
+      <select name="estado">
+        <option value="">Todos</option>
+        {% for e in estados %}
+          <option value="{{ e }}" {% if filtros.estado == e %}selected{% endif %}>{{ e }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Responsável <input name="responsavel" value="{{ filtros.responsavel }}"></label>
+    <label>Prioridade
+      <select name="prioridade">
+        <option value="">Todas</option>
+        {% for p in prioridades %}
+          <option value="{{ p }}" {% if filtros.prioridade == p %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Matrícula <input name="matricula" value="{{ filtros.matricula }}"></label>
+  </div>
+  <button>Filtrar</button>
+  <a class="button secondary" href="{{ url_for('tarefas_frota') }}">Limpar</a>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      <th>Limite</th>
+      <th>Matrícula</th>
+      <th>Tarefa</th>
+      <th>Prioridade</th>
+      <th>Estado</th>
+      <th>Responsável</th>
+      <th>Origem</th>
+      <th>Atualizar</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in tarefas %}
+      <tr>
+        <td>{{ t.data_limite or '' }}</td>
+        <td><strong>{{ t.matricula or '' }}</strong></td>
+        <td>{{ t.titulo }}</td>
+        <td>{{ t.prioridade }}</td>
+        <td>{{ t.estado }}</td>
+        <td>{{ t.responsavel or '' }}</td>
+        <td>
+          {% if t.origem_tipo == 'incidente_frota' %}
+            <a href="{{ url_for('incidente_frota_detail', incidente_id=t.origem_id|int) }}">Incidente #{{ t.origem_id }}</a>
+          {% else %}
+            {{ t.origem_tipo or '' }}
+          {% endif %}
+        </td>
+        <td>
+          <form class="mini-form" method="post" action="{{ url_for('atualizar_tarefa_frota_estado', tarefa_id=t.id) }}">
+            <input name="responsavel" value="{{ t.responsavel or '' }}" placeholder="Responsável">
+            <select name="estado">
+              {% for e in estados %}
+                <option value="{{ e }}" {% if t.estado == e %}selected{% endif %}>{{ e }}</option>
+              {% endfor %}
+            </select>
+            <button>OK</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8">Sem tarefas de frota.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Utilizadores</h2>
+    <p class="muted">Gestão simples de acessos.</p>
+  </div>
+  <a class="button" href="{{ url_for('novo_user') }}">Novo utilizador</a>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Email</th>
+      <th>Perfil</th>
+      <th>Departamento</th>
+      <th>Ativo</th>
+      <th>Criado em</th>
+      <th>Último login</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for u in users %}
+      <tr>
+        <td>{{ u.nome }}</td>
+        <td>{{ u.email }}</td>
+        <td><span class="badge">{{ u.role }}</span></td>
+        <td>{{ u.departamento or '' }}</td>
+        <td>{{ 'Sim' if u.ativo else 'Não' }}</td>
+        <td>{{ u.criado_em }}</td>
+        <td>{{ u.ultimo_login or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7">Sem utilizadores.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

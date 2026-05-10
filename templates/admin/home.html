@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Administração e configurações</h2>
+    <p class="muted">Acessos, permissões, classificações, regras e estrutura operacional.</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('home') }}">Voltar ao início</a>
+</div>
+
+<div class="hub-grid">
+
+  <a class="hub-card" href="{{ url_for('users') }}">
+    <h3>Utilizadores</h3>
+    <p>Gerir acessos, perfis, estado dos utilizadores e rastreabilidade mínima.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('novo_user') }}">
+    <h3>Novo Utilizador</h3>
+    <p>Criar utilizadores com perfil Admin, Gestor, Operador ou Consulta.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('incidentes_classificacoes') }}">
+    <h3>Classificações de Incidentes</h3>
+    <p>Gerir subtipos de incidentes, prioridade, SLA e geração automática de tarefas.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('nova_classificacao_incidente') }}">
+    <h3>Nova Classificação</h3>
+    <p>Criar novas classificações de incidentes sem alterar código.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('protocolos_campos') }}">
+    <h3>Biblioteca de Campos</h3>
+    <p>Gerir campos possíveis para protocolos dinâmicos e checklists.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('protocolos_regras') }}">
+    <h3>Regras de Protocolo</h3>
+    <p>Gerir regras por marca, modelo, motorização, combustível e tipo de intervenção.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('conhecimento_index') }}">
+    <h3>Centro de Conhecimento</h3>
+    <p>Manual operacional vivo, explicações por área e procedimentos de utilização.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('conhecimento_novo') }}">
+    <h3>Novo Artigo</h3>
+    <p>Criar procedimentos, FAQs, regras internas e ajudas contextuais.</p>
+  </a>
+
+</div>
+
+{% endblock %}

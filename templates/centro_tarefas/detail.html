@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>#{{ tarefa.id }} · {{ tarefa.assunto }}</h2>
+    <p class="muted">{{ tarefa.categoria }} · {{ tarefa.departamento }} · criado por {{ tarefa.criado_por_nome }}</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('centro_tarefas') }}">Voltar</a>
+</div>
+
+<div class="cards">
+  <div class="card">
+    <h3>Resumo</h3>
+    <p><strong>Estado:</strong> <span class="state-badge">{{ tarefa.estado }}</span></p>
+    <p><strong>Prioridade:</strong> <span class="priority-badge priority-{{ tarefa.prioridade|lower }}">{{ tarefa.prioridade }}</span></p>
+    <p><strong>Responsável:</strong> {{ tarefa.responsavel or 'Por atribuir' }}</p>
+    <p><strong>Data limite:</strong> {{ tarefa.data_limite or '' }}</p>
+    <p><strong>Criado em:</strong> {{ tarefa.criado_em }}</p>
+  </div>
+  <div class="card">
+    <h3>Contexto</h3>
+    <p><strong>Matrícula:</strong> {{ tarefa.matricula or '' }}</p>
+    <p><strong>Estação:</strong> {{ tarefa.estacao or '' }}</p>
+    <p><strong>Cliente:</strong> {{ tarefa.cliente or '' }}</p>
+    <p><strong>Atualizado:</strong> {{ tarefa.atualizado_em or '' }}</p>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Descrição</h3>
+  <p>{{ tarefa.descricao }}</p>
+</div>
+
+{% if can_update %}
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('centro_tarefa_atualizar', tarefa_id=tarefa.id) }}" class="modern-form">
+    <h3>Atualizar</h3>
+    <div class="grid">
+      <label>Estado
+        <select name="estado">
+          {% for e in estados %}
+            <option value="{{ e }}" {% if tarefa.estado == e %}selected{% endif %}>{{ e }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Responsável <input name="responsavel" value="{{ tarefa.responsavel or '' }}"></label>
+      <label>Data limite <input name="data_limite" type="datetime-local" value="{{ tarefa.data_limite or '' }}"></label>
+    </div>
+    <label>Comentário <textarea name="comentario"></textarea></label>
+    <label>Anexos <input type="file" name="anexos" multiple></label>
+    <button>Guardar atualização</button>
+  </form>
+{% endif %}
+
+<h3>Comentários</h3>
+<div class="comment-list">
+  {% for c in comentarios %}
+    <div class="comment-card">
+      <strong>{{ c.user_nome or 'Utilizador' }}</strong>
+      <span>{{ c.criado_em }}</span>
+      <p>{{ c.comentario }}</p>
+    </div>
+  {% else %}
+    <div class="empty-state">Sem comentários.</div>
+  {% endfor %}
+</div>
+
+<h3>Anexos</h3>
+<table>
+  <thead><tr><th>Ficheiro</th><th>Tipo</th><th>Tamanho</th><th>Por</th><th>Data</th></tr></thead>
+  <tbody>
+    {% for a in anexos %}
+      <tr>
+        <td><a href="{{ url_for('uploaded_file', filename=a.filename) }}">{{ a.original_name }}</a></td>
+        <td>{{ a.file_type or '' }}</td>
+        <td>{% if a.file_size %}{{ (a.file_size / 1024)|round(1) }} KB{% endif %}</td>
+        <td>{{ a.carregado_por or '' }}</td>
+        <td>{{ a.carregado_em }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5">Sem anexos.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Histórico</h3>
+<table>
+  <thead><tr><th>Data</th><th>Utilizador</th><th>Campo</th><th>Antes</th><th>Depois</th></tr></thead>
+  <tbody>
+    {% for h in historico %}
+      <tr>
+        <td>{{ h.changed_at }}</td>
+        <td>{{ h.user_nome or 'Sistema' }}</td>
+        <td>{{ h.campo_alterado }}</td>
+        <td>{{ h.valor_antigo or '' }}</td>
+        <td>{{ h.valor_novo or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5">Sem histórico registado.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

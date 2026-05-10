@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h2>Histórico de Folhas de Obra Rentway</h2>
+  <a class="button" href="{{ url_for('importar_folhas_obra_view') }}">Importar FO</a>
+</div>
+
+<div class="summary-grid">
+  <div class="summary-card"><strong>Nº de FO</strong><span>{{ resumo.total_fo or 0 }}</span></div>
+  <div class="summary-card"><strong>Viaturas</strong><span>{{ resumo.viaturas or 0 }}</span></div>
+  <div class="summary-card"><strong>Valor total</strong><span>{{ resumo.valor_total or 0 }}</span></div>
+  <div class="summary-card"><strong>A validar</strong><span>{{ resumo.validar or 0 }}</span></div>
+</div>
+
+<form method="get" class="filter-form">
+  <div class="grid">
+    <label>Pesquisa
+      <input name="q" value="{{ filtros.q }}" placeholder="FO, matricula, fornecedor, fatura ou descricao">
+    </label>
+    <label>Matricula
+      <input name="matricula" value="{{ filtros.matricula }}">
+    </label>
+    <label>Fornecedor
+      <select name="fornecedor">
+        <option value="">Todos</option>
+        {% for f in fornecedores %}
+          <option value="{{ f.fornecedor }}" {% if filtros.fornecedor == f.fornecedor %}selected{% endif %}>{{ f.fornecedor }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Natureza
+      <select name="natureza">
+        <option value="">Todas</option>
+        {% for n in naturezas %}
+          <option value="{{ n.natureza }}" {% if filtros.natureza == n.natureza %}selected{% endif %}>{{ n.natureza }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+  <button type="submit">Filtrar</button>
+  <a class="button secondary" href="{{ url_for('folhas_obra_rentway') }}">Limpar</a>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      <th>FO</th>
+      <th>Data</th>
+      <th>Matricula</th>
+      <th>Modelo</th>
+      <th>Fornecedor</th>
+      <th>Fatura</th>
+      <th>Natureza</th>
+      <th>Kms</th>
+      <th>Valor c/IVA</th>
+      <th>Estado</th>
+      <th>Descricao</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for f in folhas %}
+      <tr>
+        <td>{{ f.folha_obra_origem or '' }}</td>
+        <td>{{ f.data_documento or '' }}</td>
+        <td>{{ f.matricula or '' }}</td>
+        <td>{{ f.modelo or '' }}</td>
+        <td>{{ f.fornecedor or '' }}</td>
+        <td>{{ f.numero_fatura or '' }}</td>
+        <td>{{ f.natureza or '' }}</td>
+        <td>{{ f.kms or '' }}</td>
+        <td>{{ f.valor_com_iva or '' }}</td>
+        <td><span class="badge">{{ f.estado_importacao or '' }}</span></td>
+        <td>{{ f.descricao or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="11">Sem folhas de obra importadas.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p class="muted">Mostra no maximo 500 registos por pesquisa.</p>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Checklist dinâmica — {{ p.numero_impro }}</h2>
+    <p class="muted">{{ p.matricula }} · {{ p.marca or '' }} {{ p.modelo or '' }} {{ p.motorizacao or '' }}</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('processo_detail', processo_id=p.id) }}">Voltar ao processo</a>
+</div>
+
+<div class="summary-grid">
+  <div class="summary-card"><strong>Regra aplicada</strong><span>{{ regra.nome_regra if regra else 'Sem regra' }}</span></div>
+  <div class="summary-card"><strong>Obrigatórios</strong><span>{{ preenchidos }}/{{ total_obrigatorios }}</span></div>
+  <div class="summary-card"><strong>Em falta</strong><span>{{ em_falta|length }}</span></div>
+</div>
+
+{% if em_falta %}
+  <div class="empty-state">
+    <strong>Campos obrigatórios por preencher:</strong>
+    {% for campo in em_falta %}
+      <span class="badge">{{ campo.nome_campo }}</span>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" class="protocol-form">
+  <label>Preenchido por
+    <input name="preenchido_por" value="{{ p.responsavel or '' }}">
+  </label>
+
+  {% for fase in fases %}
+    <section class="protocol-section">
+      <h3>{{ fase.nome }}</h3>
+      <div class="protocol-fields">
+        {% for campo in fase.campos %}
+          {% set valor = valores.get(campo.id) %}
+          <div class="protocol-field {% if campo.obrigatorio_regra %}required{% endif %}">
+            <div class="protocol-field-head">
+              <strong>{{ campo.nome_campo }}</strong>
+              <span>{{ campo.tipo_campo }}</span>
+            </div>
+            {% if campo.instrucoes_regra %}
+              <p class="muted">{{ campo.instrucoes_regra }}</p>
+            {% endif %}
+
+            {% if campo.tipo_campo == 'Sim/Não' %}
+              <label class="check-line">
+                <input type="checkbox" name="campo_{{ campo.id }}" value="1" {% if valor and valor.valor_booleano %}checked{% endif %}>
+                Sim
+              </label>
+            {% elif campo.tipo_campo in ['Número', 'Percentagem'] %}
+              <input type="number" step="0.01" name="campo_{{ campo.id }}" value="{{ valor.valor_numero if valor and valor.valor_numero is not none else '' }}">
+            {% elif campo.tipo_campo == 'Data' %}
+              <input type="date" name="campo_{{ campo.id }}" value="{{ valor.valor_data if valor else '' }}">
+            {% elif campo.tipo_campo in ['Observação', 'Documento', 'Foto', 'PDF'] %}
+              <textarea name="campo_{{ campo.id }}">{{ valor.valor_texto if valor else '' }}</textarea>
+            {% else %}
+              <input name="campo_{{ campo.id }}" value="{{ valor.valor_texto if valor else '' }}">
+            {% endif %}
+
+            {% if campo.aceita_anexo or campo.exige_anexo %}
+              <label>Anexo
+                <input type="file" name="anexo_{{ campo.id }}" multiple>
+              </label>
+              <span class="muted">{{ anexos_por_campo.get(campo.id, 0) }} anexo(s)</span>
+            {% endif %}
+
+            <label>Notas
+              <input name="obs_{{ campo.id }}" value="{{ valor.observacoes if valor else '' }}">
+            </label>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endfor %}
+
+  <button>Guardar checklist</button>
+</form>
+
+{% endblock %}

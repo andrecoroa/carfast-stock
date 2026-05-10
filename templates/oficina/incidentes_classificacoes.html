@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Classificações de Incidentes Frota</h2>
+    <p class="muted">Subtipos dinâmicos por categoria.</p>
+  </div>
+  <a class="button" href="{{ url_for('nova_classificacao_incidente') }}">Nova classificação</a>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Categoria</th>
+      <th>Classificação</th>
+      <th>Prioridade</th>
+      <th>Gera tarefa</th>
+      <th>Faturável</th>
+      <th>SLA horas</th>
+      <th>Ativo</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in classificacoes %}
+      <tr>
+        <td>{{ c.categoria_nome }}</td>
+        <td><strong>{{ c.nome }}</strong></td>
+        <td>{{ c.prioridade_default }}</td>
+        <td>{{ 'Sim' if c.gera_tarefa else 'Não' }}</td>
+        <td>{{ c.faturavel_default }}</td>
+        <td>{{ c.sla_horas_default }}</td>
+        <td>{{ 'Sim' if c.ativo else 'Não' }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

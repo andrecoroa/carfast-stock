@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Auditoria operacional</h2>
+    <p class="muted">Exceções, prioridades e padrões que precisam de decisão.</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('home') }}">Voltar ao inicio</a>
+</div>
+
+<div class="summary-grid">
+  <a class="summary-card audit-priority" href="{{ url_for('auditoria_viatura_timeline') }}">
+    <strong>Timeline</strong>
+    <span>+</span>
+    <small>Auditoria por viatura</small>
+    <em>Ver todos os acontecimentos de uma matricula numa unica linha temporal.</em>
+  </a>
+  {% for p in prioridades %}
+    <a class="summary-card audit-priority" href="{{ p.url }}">
+      <strong>{{ p.nivel }}</strong>
+      <span>{{ p.valor or 0 }}</span>
+      <small>{{ p.titulo }}</small>
+      <em>{{ p.descricao }}</em>
+    </a>
+  {% endfor %}
+</div>
+
+<div class="section-head">
+  <h3>Viaturas a investigar</h3>
+  <span class="muted">Custo acumulado e reincidencia operacional.</span>
+</div>
+
+<div class="two-column">
+  <section>
+    <h4>Maior custo em faturas</h4>
+    <table class="compact-table">
+      <thead>
+        <tr>
+          <th>Matricula</th>
+          <th>Viatura</th>
+          <th>Docs.</th>
+          <th>Linhas</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in viaturas_custo %}
+          <tr>
+            <td><a href="{{ url_for('viaturas') }}?q={{ r.matricula }}">{{ r.matricula }}</a></td>
+            <td>{{ r.marca or '' }} {{ r.modelo or '' }}</td>
+            <td class="number">{{ r.documentos or 0 }}</td>
+            <td class="number">{{ r.linhas or 0 }}</td>
+            <td class="number">{{ r.valor_total or 0 }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5">Sem dados de faturas.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h4>Reincidencia por viatura</h4>
+    <table class="compact-table">
+      <thead>
+        <tr>
+          <th>Matricula</th>
+          <th>Viatura</th>
+          <th>FO</th>
+          <th>Impros</th>
+          <th>AR</th>
+          <th>Sin.</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in viaturas_reincidencia %}
+          <tr>
+            <td><a href="{{ url_for('viaturas') }}?q={{ r.matricula }}">{{ r.matricula }}</a></td>
+            <td>{{ r.marca or '' }} {{ r.modelo or '' }}</td>
+            <td class="number">{{ r.fo_count or 0 }}</td>
+            <td class="number">{{ r.impro_count or 0 }}</td>
+            <td class="number">{{ r.ar_count or 0 }}</td>
+            <td class="number">{{ r.sin_count or 0 }}</td>
+            <td class="number"><strong>{{ r.total_eventos or 0 }}</strong></td>
+          </tr>
+        {% else %}
+          <tr><td colspan="7">Sem reincidencias relevantes.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<div class="section-head">
+  <h3>Contratos a auditar</h3>
+  <a class="button secondary" href="{{ url_for('contratos_rentway') }}">Abrir contratos</a>
+</div>
+
+<div class="two-column">
+  <section>
+    <h4>Sem movimentos de viatura</h4>
+    <table class="compact-table">
+      <thead>
+        <tr>
+          <th>Contrato</th>
+          <th>Data out</th>
+          <th>Matricula final</th>
+          <th>Valor</th>
+          <th>Origem</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in contratos_sem_viaturas %}
+          <tr>
+            <td><a href="{{ url_for('contratos_rentway') }}?q={{ r.contrato_nr }}">{{ r.contrato_nr }}</a></td>
+            <td>{{ r.data_out or '' }}</td>
+            <td>{{ r.matricula_final or '' }}</td>
+            <td class="number">{{ r.valor_total or 0 }}</td>
+            <td>{{ r.origem or '' }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5">Sem contratos nesta situacao.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h4>Com mais do que uma viatura</h4>
+    <table class="compact-table">
+      <thead>
+        <tr>
+          <th>Contrato</th>
+          <th>Cliente</th>
+          <th>Viaturas</th>
+          <th>Matriculas</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in contratos_multiviatura %}
+          <tr>
+            <td><a href="{{ url_for('contratos_rentway') }}?q={{ r.contrato_nr }}">{{ r.contrato_nr }}</a></td>
+            <td class="clip" title="{{ r.cliente or '' }}">{{ r.cliente or '' }}</td>
+            <td class="number">{{ r.viaturas or 0 }}</td>
+            <td class="clip" title="{{ r.matriculas or '' }}">{{ r.matriculas or '' }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="4">Sem contratos multiviatura.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<section>
+  <h4>Contratos com valor zero ou negativo</h4>
+  <table class="compact-table">
+    <thead>
+      <tr>
+        <th>Contrato</th>
+        <th>Data out</th>
+        <th>Data in</th>
+        <th>Matricula final</th>
+        <th>Valor</th>
+        <th>Origem</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in contratos_valor_anormal %}
+        <tr>
+          <td><a href="{{ url_for('contratos_rentway') }}?q={{ r.contrato_nr }}">{{ r.contrato_nr }}</a></td>
+          <td>{{ r.data_out or '' }}</td>
+          <td>{{ r.data_in or '' }}</td>
+          <td>{{ r.matricula_final or '' }}</td>
+          <td class="number">{{ r.valor_total or 0 }}</td>
+          <td>{{ r.origem or '' }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6">Sem contratos com valor anormal.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<div class="section-head">
+  <h3>Dados a validar</h3>
+  <span class="muted">Linhas importadas com risco de qualidade.</span>
+</div>
+
+<div class="two-column">
+  <section>
+    <h4>Faturas de fornecedores</h4>
+    <table class="compact-table">
+      <thead>
+        <tr>
+          <th>Documento</th>
+          <th>Fornecedor</th>
+          <th>Data</th>
+          <th>Matriculas</th>
+          <th>Linhas</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in faturas_validar %}
+          <tr>
+            <td><a href="{{ url_for('faturas_fornecedores') }}?q={{ r.documento }}">{{ r.documento }}</a></td>
+            <td class="clip" title="{{ r.fornecedor or '' }}">{{ r.fornecedor or '' }}</td>
+            <td>{{ r.data_doc or '' }}</td>
+            <td class="clip" title="{{ r.matriculas or '' }}">{{ r.matriculas or '' }}</td>
+            <td class="number">{{ r.linhas or 0 }}</td>
+            <td class="number">{{ r.valor_total or 0 }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="6">Sem faturas a validar.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h4>Sinistros Allianz</h4>
+    <table class="compact-table">
+      <thead>
+        <tr>
+          <th>Matricula</th>
+          <th>Referencia</th>
+          <th>Data</th>
+          <th>Causa</th>
+          <th>Custo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in sinistros_validar %}
+          <tr>
+            <td><a href="{{ url_for('sinistros_allianz') }}?matricula={{ r.matricula }}">{{ r.matricula or '' }}</a></td>
+            <td>{{ r.referencia_sinistro or '' }}</td>
+            <td>{{ r.data_sinistro or '' }}</td>
+            <td class="clip" title="{{ r.causa or r.alertas or '' }}">{{ r.causa or r.alertas or '' }}</td>
+            <td class="number">{{ r.custo_total or 0 }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5">Sem sinistros a validar.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<section>
+  <h4>Custos por tipo de servico</h4>
+  <table class="compact-table">
+    <thead>
+      <tr>
+        <th>Servico</th>
+        <th>Linhas</th>
+        <th>Viaturas</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in top_servicos %}
+        <tr>
+          <td><a href="{{ url_for('faturas_fornecedores') }}?vista=servico&q={{ r.servico }}">{{ r.servico }}</a></td>
+          <td class="number">{{ r.linhas or 0 }}</td>
+          <td class="number">{{ r.viaturas or 0 }}</td>
+          <td class="number">{{ r.valor_total or 0 }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4">Sem custos classificados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% endblock %}

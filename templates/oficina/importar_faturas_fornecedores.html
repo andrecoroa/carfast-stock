@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h2>Importar Faturas de Fornecedores</h2>
+  <a class="button secondary" href="{{ url_for('faturas_fornecedores') }}">Voltar às faturas</a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  <label>Responsavel
+    <input name="responsavel" placeholder="Nome de quem esta a importar">
+  </label>
+  <label>Ficheiro de importacao
+    <input type="file" name="ficheiro" accept=".xlsx,.xlsm" required>
+  </label>
+  <button type="submit">Importar faturas</button>
+</form>
+
+<p class="muted">O ficheiro deve conter a folha Importacao com linhas de detalhe por fatura. A aplicacao evita duplicados por fornecedor, documento, matricula, descricao, referencia, valor e PDF.</p>
+
+<h3>Ultimas importacoes</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Ficheiro</th>
+      <th>Linhas</th>
+      <th>Criadas</th>
+      <th>Atualizadas</th>
+      <th>Ignoradas</th>
+      <th>Observacoes</th>
+      <th>Responsavel</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in importacoes %}
+      <tr>
+        <td>{{ i.criado_em }}</td>
+        <td>{{ i.original_name }}</td>
+        <td>{{ i.total_linhas }}</td>
+        <td>{{ i.criadas }}</td>
+        <td>{{ i.atualizadas }}</td>
+        <td>{{ i.ignoradas }}</td>
+        <td>{{ i.observacoes or '' }}</td>
+        <td>{{ i.responsavel or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8">Ainda nao existem importacoes de faturas.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

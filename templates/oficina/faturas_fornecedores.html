@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h2>Faturas de Fornecedores</h2>
+  <a class="button" href="{{ url_for('importar_faturas_fornecedores_view') }}">Importar faturas</a>
+</div>
+
+<div class="summary-grid">
+  <div class="summary-card"><strong>Documentos</strong><span>{{ resumo.documentos or 0 }}</span></div>
+  <div class="summary-card"><strong>Linhas</strong><span>{{ resumo.linhas or 0 }}</span></div>
+  <div class="summary-card"><strong>Viaturas</strong><span>{{ resumo.viaturas or 0 }}</span></div>
+  <div class="summary-card"><strong>Valor total</strong><span>{{ resumo.valor_total or 0 }}</span></div>
+  <div class="summary-card"><strong>Mao de obra</strong><span>{{ resumo.valor_mo or 0 }}</span></div>
+  <div class="summary-card"><strong>Material</strong><span>{{ resumo.valor_mat or 0 }}</span></div>
+</div>
+
+<form method="get" class="filter-form">
+  <div class="grid">
+    <label>Pesquisa
+      <input name="q" value="{{ filtros.q }}" placeholder="Documento, matricula, fornecedor, descricao, referencia ou OR">
+    </label>
+    <label>Matricula
+      <input name="matricula" value="{{ filtros.matricula }}">
+    </label>
+    <label>Fornecedor
+      <select name="fornecedor">
+        <option value="">Todos</option>
+        {% for f in fornecedores %}
+          <option value="{{ f.fornecedor }}" {% if filtros.fornecedor == f.fornecedor %}selected{% endif %}>{{ f.fornecedor }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>CT
+      <select name="ct">
+        <option value="">Todos</option>
+        {% for c in cts %}
+          <option value="{{ c.ct }}" {% if filtros.ct == c.ct %}selected{% endif %}>{{ c.ct }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Vista
+      <select name="vista">
+        <option value="documento" {% if filtros.vista == 'documento' %}selected{% endif %}>Documento</option>
+        <option value="viatura" {% if filtros.vista == 'viatura' %}selected{% endif %}>Viatura</option>
+        <option value="fornecedor" {% if filtros.vista == 'fornecedor' %}selected{% endif %}>Fornecedor</option>
+        <option value="servico" {% if filtros.vista == 'servico' %}selected{% endif %}>Servico</option>
+      </select>
+    </label>
+    <label>Ordenar por
+      <select name="ordem">
+        <option value="data" {% if filtros.ordem == 'data' %}selected{% endif %}>Data</option>
+        <option value="valor" {% if filtros.ordem == 'valor' %}selected{% endif %}>Valor</option>
+        <option value="linhas" {% if filtros.ordem == 'linhas' %}selected{% endif %}>Linhas</option>
+        <option value="nome" {% if filtros.ordem == 'nome' %}selected{% endif %}>Nome</option>
+      </select>
+    </label>
+  </div>
+  <button type="submit">Filtrar</button>
+  <a class="button secondary" href="{{ url_for('faturas_fornecedores') }}">Limpar</a>
+</form>
+
+<div class="document-list">
+  {% for doc in documentos %}
+    {% set r = doc.resumo %}
+    <details class="document-panel">
+      <summary>
+        <span class="doc-main">
+          <strong>{{ r.titulo or 'Sem grupo' }}</strong>
+          <span>{{ r.subtitulo or '' }}</span>
+        </span>
+        <span class="doc-meta">{{ r.meta_data or '' }}</span>
+        <span class="doc-meta" title="{{ r.meta_um or '' }}">{{ r.meta_um or '' }}</span>
+        <span class="doc-meta" title="{{ r.meta_dois or '' }}">{{ r.meta_dois or '' }}</span>
+        <span class="doc-services">
+          {% for servico in doc.servicos %}
+            <span class="service-badge">{{ servico }}</span>
+          {% else %}
+            <span class="service-muted">Sem sinal</span>
+          {% endfor %}
+        </span>
+        <span class="doc-lines">{{ r.linhas or 0 }} linhas</span>
+        <span class="doc-total">{{ r.valor_total or 0 }}</span>
+      </summary>
+
+      <table class="compact-table supplier-invoices">
+        <thead>
+          <tr>
+            <th>Matricula</th>
+            <th>OR</th>
+            <th>Descricao</th>
+            <th>Referencia</th>
+            <th>Qtd</th>
+            <th>Total liq.</th>
+            <th>CT</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in doc.linhas %}
+            <tr>
+              <td class="nowrap">{{ l.matricula or '' }}</td>
+              <td class="nowrap">{{ l.or_reparacao or '' }}</td>
+              <td class="clip description-cell" title="{{ (l.descricao or '')|replace('\n', ' ') }}">
+                {{ (l.descricao or '')|replace('\n', ' ') }}
+              </td>
+              <td class="clip clip-sm" title="{{ l.referencia or '' }}">{{ l.referencia or '' }}</td>
+              <td class="number">{{ l.quantidade or '' }}</td>
+              <td class="number">{{ l.total_liq or '' }}</td>
+              <td class="nowrap">{{ l.ct or '' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </details>
+  {% else %}
+    <div class="empty-state">Sem faturas de fornecedores importadas.</div>
+  {% endfor %}
+</div>
+
+<p class="muted">Mostra no maximo 250 grupos por pesquisa. Clica num grupo para ver as linhas de detalhe.</p>
+{% endblock %}

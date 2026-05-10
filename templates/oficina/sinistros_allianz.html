@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h2>Sinistros Allianz</h2>
+  <a class="button" href="{{ url_for('importar_sinistros_allianz_view') }}">Importar sinistros</a>
+</div>
+
+<div class="summary-grid">
+  <div class="summary-card"><strong>Sinistros</strong><span>{{ resumo.total_sinistros or 0 }}</span></div>
+  <div class="summary-card"><strong>Viaturas</strong><span>{{ resumo.viaturas or 0 }}</span></div>
+  <div class="summary-card"><strong>Custo total</strong><span>{{ resumo.custo_total or 0 }}</span></div>
+  <div class="summary-card"><strong>A validar</strong><span>{{ resumo.validar or 0 }}</span></div>
+</div>
+
+<form method="get" class="filter-form">
+  <div class="grid">
+    <label>Pesquisa
+      <input name="q" value="{{ filtros.q }}" placeholder="Matricula, referencia, adesao ou causa">
+    </label>
+    <label>Matricula
+      <input name="matricula" value="{{ filtros.matricula }}">
+    </label>
+    <label>Causa
+      <select name="causa">
+        <option value="">Todas</option>
+        {% for c in causas %}
+          <option value="{{ c.causa }}" {% if filtros.causa == c.causa %}selected{% endif %}>{{ c.causa }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+  <button type="submit">Filtrar</button>
+  <a class="button secondary" href="{{ url_for('sinistros_allianz') }}">Limpar</a>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Matricula</th>
+      <th>Referencia</th>
+      <th>Causa</th>
+      <th>Encerramento</th>
+      <th>RC</th>
+      <th>DP</th>
+      <th>IDS credor</th>
+      <th>Vidros</th>
+      <th>Gestao</th>
+      <th>Total</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in sinistros %}
+      <tr>
+        <td>{{ s.data_sinistro or '' }}</td>
+        <td>{{ s.matricula or '' }}</td>
+        <td>{{ s.referencia_sinistro or '' }}</td>
+        <td>{{ s.causa or '' }}</td>
+        <td>{{ s.data_encerramento or '' }}</td>
+        <td>{{ s.valor_rc or '' }}</td>
+        <td>{{ s.valor_dp or '' }}</td>
+        <td>{{ s.valor_ids_credor or '' }}</td>
+        <td>{{ s.valor_vidros or '' }}</td>
+        <td>{{ s.custos_gestao or '' }}</td>
+        <td>{{ s.custo_total or '' }}</td>
+        <td><span class="badge">{{ s.estado_importacao or '' }}</span></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="12">Sem sinistros Allianz importados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p class="muted">Mostra no maximo 500 sinistros por pesquisa. Linhas repetidas da mesma matricula na mesma data sao agregadas num unico sinistro.</p>
+{% endblock %}

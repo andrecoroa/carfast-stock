@@ -1,0 +1,17 @@
+<header class="topbar">
+  <button class="icon-button sidebar-toggle" type="button" data-sidebar-toggle aria-label="Alternar menu">☰</button>
+  <div class="breadcrumbs">
+    <span>CarFast</span>
+    <strong>Hub Operacional</strong>
+  </div>
+  <div class="global-search">
+    <span>Pesquisar</span>
+    <input placeholder="Matrícula, tarefa, cliente, documento...">
+  </div>
+  <div class="topbar-right">
+    <a class="quick-indicator" href="{{ url_for('conhecimento_index') }}">Conhecimento</a>
+    <a class="quick-action" href="{{ url_for('centro_tarefas_novo') }}">Novo Registo</a>
+    <span class="quick-indicator">Notificações</span>
+    <span class="user-pill">{{ current_user.nome }} · {{ current_user.role }}</span>
+  </div>
+</header>

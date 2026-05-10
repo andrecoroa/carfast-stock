@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Venda de Usados — Selecionar Viaturas</h2>
+    <p class="muted">Filtra a frota ativa e seleciona candidatas para venda.</p>
+  </div>
+  <div>
+    <a class="button secondary" href="{{ url_for('venda_usados_selecionadas') }}">Viaturas Selecionadas</a>
+    <a class="button secondary" href="{{ url_for('venda_usados_exportar') }}">Exportar Listagem</a>
+  </div>
+</div>
+
+<form method="get" class="filter-form">
+  <div class="grid">
+    <label>Marca <input name="marca" value="{{ filtros.marca }}"></label>
+    <label>Modelo <input name="modelo" value="{{ filtros.modelo }}"></label>
+    <label>Versão <input name="versao" value="{{ filtros.versao }}"></label>
+    <label>Ano <input name="ano" value="{{ filtros.ano }}"></label>
+    <label>KM mínimo <input name="km_min" type="number" value="{{ filtros.km_min }}"></label>
+    <label>KM máximo <input name="km_max" type="number" value="{{ filtros.km_max }}"></label>
+    <label>Estado frota <input name="estado_frota" value="{{ filtros.estado_frota }}"></label>
+    <label>Estado operacional <input name="estado_operacional" value="{{ filtros.estado_operacional }}"></label>
+    <label>Grupo / categoria <input name="grupo_categoria" value="{{ filtros.grupo_categoria }}"></label>
+    <label>Próxima revisão até <input name="proxima_revisao" type="date" value="{{ filtros.proxima_revisao }}"></label>
+    <label>Fornecedor financeiro <input name="fornecedor_financeiro" value="{{ filtros.fornecedor_financeiro }}"></label>
+  </div>
+  <button>Filtrar</button>
+  <a class="button secondary" href="{{ url_for('venda_usados') }}">Limpar</a>
+</form>
+
+<form method="post" action="{{ url_for('venda_usados_adicionar') }}" class="filter-form">
+  <table class="compact-table">
+    <thead>
+      <tr>
+        <th>Selecionar</th>
+        <th>Matrícula</th>
+        <th>Marca</th>
+        <th>Modelo</th>
+        <th>Versão</th>
+        <th>Ano</th>
+        <th>KM</th>
+        <th>Fornecedor financeiro</th>
+        <th>Próxima revisão</th>
+        <th>Valor aquisição</th>
+        <th>Valor atual teórico</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in viaturas %}
+        {% set v = item.row %}
+        {% set venda = item.venda %}
+        <tr>
+          <td>
+            {% if v.venda_id %}
+              <span class="badge">{{ v.venda_estado }}</span>
+            {% else %}
+              <input type="checkbox" name="viatura_id" value="{{ v.id }}">
+            {% endif %}
+          </td>
+          <td><strong>{{ v.matricula }}</strong></td>
+          <td>{{ v.marca or '' }}</td>
+          <td>{{ v.modelo or '' }}</td>
+          <td>{{ v.versao or '' }}</td>
+          <td>{{ v.ano or '' }}</td>
+          <td>{{ v.km_atual or '' }}</td>
+          <td>{{ venda.fornecedor_financeiro or '' }}</td>
+          <td>{{ venda.proxima_revisao or '' }}</td>
+          <td>{{ venda.valor_aquisicao or '' }}</td>
+          <td>{{ venda.valor_atual_teorico or '' }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="11">Sem viaturas para estes filtros.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <button>Adicionar à Venda</button>
+</form>
+
+{% endblock %}

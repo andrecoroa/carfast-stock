@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h2>Importar Impros Rentway</h2>
+  <a class="button secondary" href="{{ url_for('impros_rentway') }}">Voltar ao histórico</a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  <label>Responsavel
+    <input name="responsavel" placeholder="Nome de quem esta a importar">
+  </label>
+  <label>Ficheiros de impros Rentway
+    <input type="file" name="ficheiros" accept=".xls,.xlsx" multiple required>
+  </label>
+  <button type="submit">Importar impros</button>
+</form>
+
+<h3>Ultimas importacoes</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Ficheiro</th>
+      <th>Folha</th>
+      <th>Linhas</th>
+      <th>Criadas</th>
+      <th>Atualizadas</th>
+      <th>Ignoradas</th>
+      <th>Responsavel</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in importacoes %}
+      <tr>
+        <td>{{ i.criado_em }}</td>
+        <td>{{ i.original_name }}</td>
+        <td>{{ i.sheet_name or '' }}</td>
+        <td>{{ i.total_linhas }}</td>
+        <td>{{ i.criadas }}</td>
+        <td>{{ i.atualizadas }}</td>
+        <td>{{ i.ignoradas }}</td>
+        <td>{{ i.responsavel or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8">Ainda nao existem importacoes de impros.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

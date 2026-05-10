@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Gestão</h2>
+    <p class="muted">Auditoria, custos, históricos Rentway, contratos e suporte à decisão.</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('home') }}">Voltar ao início</a>
+</div>
+
+<div class="hub-grid">
+
+  <a class="hub-card" href="{{ url_for('auditoria_home') }}">
+    <h3>Auditoria Operacional</h3>
+    <p>Indicadores, exceções, desvios, reincidências e prioridades de decisão.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('faturas_fornecedores') }}">
+    <h3>Faturas de Fornecedores</h3>
+    <p>Consultar custos por documento, fornecedor, matrícula, material e mão de obra.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('contratos_rentway') }}">
+    <h3>Contratos Rentway</h3>
+    <p>Cruzar histórico financeiro dos contratos com viaturas usadas em cada contrato.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('impros_rentway') }}">
+    <h3>Impros Rentway</h3>
+    <p>Consultar impros importados, tempos, estações, oficinas e reincidências.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('folhas_obra_rentway') }}">
+    <h3>Folhas de Obra Rentway</h3>
+    <p>Consultar histórico FO, fornecedores, natureza de intervenção e valores.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('sinistros_allianz') }}">
+    <h3>Sinistros Allianz</h3>
+    <p>Consultar sinistros globais por matrícula, causa, custo e estado.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('ars_rentway') }}">
+    <h3>ARs Rentway</h3>
+    <p>Consultar accident reports globais e cruzar com sinistros e viaturas.</p>
+  </a>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>{{ regra.nome_regra }}</h2>
+    <p class="muted">{{ regra.marca or 'Todas as marcas' }} · {{ regra.motorizacao or 'Todas as motorizações' }} · {{ regra.combustivel or 'Todos os combustíveis' }}</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('protocolos_regras') }}">Voltar</a>
+</div>
+
+<div class="summary-grid">
+  <div class="summary-card"><strong>Campos na regra</strong><span>{{ total }}</span></div>
+  <div class="summary-card"><strong>Estado</strong><span>{{ 'Ativa' if regra.ativo else 'Inativa' }}</span></div>
+  <div class="summary-card"><strong>Tipo</strong><span>{{ regra.tipo_intervencao or 'Todos' }}</span></div>
+</div>
+
+{% for fase in fases %}
+  <h3>{{ fase.nome }}</h3>
+  <table class="compact-table">
+    <thead>
+      <tr>
+        <th>Campo</th>
+        <th>Categoria</th>
+        <th>Tipo</th>
+        <th>Obrigatório</th>
+        <th>Exige anexo</th>
+        <th>Instruções</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for campo in fase.campos %}
+        <tr>
+          <td><strong>{{ campo.nome_campo }}</strong><br><span class="muted"><code>{{ campo.codigo_campo }}</code></span></td>
+          <td>{{ campo.categoria }}</td>
+          <td>{{ campo.tipo_campo }}</td>
+          <td>{{ 'Sim' if campo.obrigatorio_regra else 'Não' }}</td>
+          <td>{{ 'Sim' if campo.exige_anexo else 'Não' }}</td>
+          <td>{{ campo.instrucoes_regra or '' }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endfor %}
+
+{% endblock %}

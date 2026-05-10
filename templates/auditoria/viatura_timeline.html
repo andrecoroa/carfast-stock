@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Timeline da viatura</h2>
+    <p class="muted">Contratos, impros, folhas de obra, faturas, sinistros, ARs e processos internos numa unica leitura.</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('auditoria_home') }}">Voltar a auditoria</a>
+</div>
+
+<form method="get" class="filter-form">
+  <div class="grid">
+    <label>Matricula
+      <input name="matricula" value="{{ matricula }}" placeholder="Ex: AA-00-AA">
+    </label>
+  </div>
+  <button type="submit">Ver timeline</button>
+</form>
+
+{% if not matricula %}
+  <div class="section-head">
+    <h3>Viaturas com mais acontecimentos</h3>
+    <span class="muted">Ponto de partida para auditoria.</span>
+  </div>
+  <table class="compact-table">
+    <thead>
+      <tr>
+        <th>Matricula</th>
+        <th>Viatura</th>
+        <th>Total eventos</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in viaturas_sugeridas %}
+        <tr>
+          <td>{{ r.matricula }}</td>
+          <td>{{ r.marca or '' }} {{ r.modelo or '' }}</td>
+          <td class="number">{{ r.total_eventos or 0 }}</td>
+          <td><a class="button secondary" href="{{ url_for('auditoria_viatura_timeline', matricula=r.matricula) }}">Abrir</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="summary-grid">
+    <div class="summary-card"><strong>Eventos</strong><span>{{ resumo_timeline.eventos or 0 }}</span></div>
+    <div class="summary-card"><strong>Contratos</strong><span>{{ resumo_timeline.contratos or 0 }}</span></div>
+    <div class="summary-card"><strong>Riscos</strong><span>{{ resumo_timeline.riscos or 0 }}</span></div>
+    <div class="summary-card"><strong>Custos</strong><span>{{ resumo_timeline.custos or 0 }}</span></div>
+  </div>
+
+  {% if viatura %}
+    <div class="vehicle-strip">
+      <strong>{{ viatura.matricula }}</strong>
+      <span>{{ viatura.marca or '' }} {{ viatura.modelo or '' }} {{ viatura.versao or '' }}</span>
+      <span>{{ viatura.estado_frota or '' }} / {{ viatura.estado_operacional or '' }}</span>
+      <a href="{{ url_for('viatura_detail', viatura_id=viatura.id) }}">Ficha da viatura</a>
+    </div>
+  {% else %}
+    <div class="empty-state">Nao encontrei esta matricula na tabela principal da frota, mas posso mostrar eventos importados se existirem.</div>
+  {% endif %}
+
+  <div class="section-head">
+    <h3>Calendario operacional</h3>
+    <span class="muted">Estado diario, documentos operacionais, financeiros e diagnostico.</span>
+  </div>
+
+  <div class="calendar-legend">
+    <span><i class="state-contrato"></i>Contrato</span>
+    <span><i class="state-impro"></i>Impro</span>
+    <span><i class="state-livre"></i>Livre</span>
+    <span><i class="doc-op"></i>Operacional</span>
+    <span><i class="doc-fin"></i>Financeiro</span>
+    <span><i class="doc-diag"></i>Diagnostico</span>
+  </div>
+
+  <div class="vehicle-calendar">
+    {% for mes in calendario_mensal %}
+      <section class="calendar-month">
+        <div class="calendar-month-label">{{ mes.label }}</div>
+        <div class="calendar-grid" style="--days: {{ mes.dias|length }};">
+          <div class="calendar-row-label"></div>
+          {% for d in mes.dias %}
+            <div class="calendar-day-number">{{ d.dia }}</div>
+          {% endfor %}
+
+          <div class="calendar-row-label">estado</div>
+          {% for d in mes.dias %}
+            {% if d.estado.url %}
+              <a class="calendar-cell state-cell state-{{ d.estado.classe }}" href="{{ d.estado.url }}" title="{{ d.estado.titulo }}">
+                <span>{{ d.estado.label[:1] }}</span>
+              </a>
+            {% else %}
+              <div class="calendar-cell state-cell state-{{ d.estado.classe }}" title="{{ d.estado.titulo }}">
+                <span>{{ d.estado.label[:1] }}</span>
+              </div>
+            {% endif %}
+          {% endfor %}
+
+          <div class="calendar-row-label">operacional</div>
+          {% for d in mes.dias %}
+            <div class="calendar-cell docs-cell docs-op {% if d.op_docs %}has-docs{% endif %}">
+              {% for doc in d.op_docs[:3] %}
+                <a href="{{ doc.url }}" title="{{ doc.titulo }}">{{ doc.sigla }}</a>
+              {% endfor %}
+              {% if d.op_docs|length > 3 %}
+                <span title="{{ d.op_docs|length }} documentos">+{{ d.op_docs|length - 3 }}</span>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          <div class="calendar-row-label">financeiro</div>
+          {% for d in mes.dias %}
+            <div class="calendar-cell docs-cell docs-fin {% if d.fin_docs %}has-docs{% endif %}">
+              {% for doc in d.fin_docs[:3] %}
+                <a href="{{ doc.url }}" title="{{ doc.titulo }}">{{ doc.sigla }}</a>
+              {% endfor %}
+              {% if d.fin_docs|length > 3 %}
+                <span title="{{ d.fin_docs|length }} documentos">+{{ d.fin_docs|length - 3 }}</span>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          <div class="calendar-row-label">diagnostico</div>
+          {% for d in mes.dias %}
+            <div class="calendar-cell docs-cell docs-diag {% if d.diag_docs %}has-docs{% endif %}">
+              {% for doc in d.diag_docs[:3] %}
+                <a href="{{ doc.url }}" title="{{ doc.titulo }}">{{ doc.sigla }}</a>
+              {% endfor %}
+              {% if d.diag_docs|length > 3 %}
+                <span title="{{ d.diag_docs|length }} documentos">+{{ d.diag_docs|length - 3 }}</span>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% else %}
+      <div class="empty-state">Sem calendario operacional para esta matricula.</div>
+    {% endfor %}
+  </div>
+
+  <div class="section-head">
+    <h3>Detalhe cronologico</h3>
+    <span class="muted">Lista complementar para leitura detalhada.</span>
+  </div>
+
+  <div class="month-timeline">
+    {% for mes in timeline_meses %}
+      <section class="month-row">
+        <aside class="month-label">
+          <strong>{{ mes.label }}</strong>
+          <span>{{ mes.eventos|length }} eventos</span>
+          {% if mes.valor %}
+            <small>{{ mes.valor }}</small>
+          {% endif %}
+        </aside>
+        <div class="month-line">
+          {% for e in mes.eventos %}
+            <article class="event-chip event-{{ e.tipo|lower|replace(' ', '-') }}">
+              <div class="event-dot"></div>
+              <div class="event-card">
+                <div class="timeline-top">
+                  <span class="timeline-type">{{ e.tipo }}</span>
+                  <span class="timeline-date-inline">{{ e.data or 'Sem data' }}</span>
+                  {% if e.valor %}
+                    <span class="timeline-value">{{ e.valor }}</span>
+                  {% endif %}
+                </div>
+                <h3>{{ e.titulo }}</h3>
+                <p>{{ e.descricao }}</p>
+                <small>{{ e.detalhe }}</small>
+                {% if e.url %}
+                  <a href="{{ e.url }}">Abrir origem</a>
+                {% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </section>
+    {% else %}
+      <div class="empty-state">Sem acontecimentos encontrados para esta matricula.</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% endblock %}

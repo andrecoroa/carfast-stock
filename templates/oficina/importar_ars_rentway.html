@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h2>Importar ARs Rentway</h2>
+  <a class="button secondary" href="{{ url_for('ars_rentway') }}">Voltar aos ARs</a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  <label>Responsavel
+    <input name="responsavel" placeholder="Nome de quem esta a importar">
+  </label>
+  <label>Ficheiro accident report Rentway
+    <input type="file" name="ficheiro" accept=".xlsx,.xlsm" required>
+  </label>
+  <button type="submit">Importar ARs</button>
+</form>
+
+<p class="muted">Este importador usa o accidentReportID como identificador unico do AR e cruza automaticamente pela matricula com a ficha da viatura.</p>
+
+<h3>Ultimas importacoes</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Ficheiro</th>
+      <th>Linhas</th>
+      <th>Criadas</th>
+      <th>Atualizadas</th>
+      <th>Ignoradas</th>
+      <th>Observacoes</th>
+      <th>Responsavel</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in importacoes %}
+      <tr>
+        <td>{{ i.criado_em }}</td>
+        <td>{{ i.original_name }}</td>
+        <td>{{ i.total_linhas }}</td>
+        <td>{{ i.criadas }}</td>
+        <td>{{ i.atualizadas }}</td>
+        <td>{{ i.ignoradas }}</td>
+        <td>{{ i.observacoes or '' }}</td>
+        <td>{{ i.responsavel or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="8">Ainda nao existem importacoes de ARs Rentway.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

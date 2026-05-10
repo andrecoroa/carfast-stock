@@ -1,0 +1,16 @@
+@media (max-width: 980px) {
+  .app-shell { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; }
+  .side-nav { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .topbar { position: static; align-items: flex-start; flex-direction: column; }
+  .topbar-right { flex-wrap: wrap; }
+  .sidebar-toggle { display: inline-flex; }
+  main { padding: 16px; }
+  .page-head, .page-hero { align-items: flex-start; flex-direction: column; }
+}
+@media (max-width: 640px) {
+  .side-nav { grid-template-columns: 1fr; }
+  .grid, .cards { grid-template-columns: 1fr; }
+  .quick-indicator, .global-search span { display: none; }
+  .page-head h2, .page-hero h2 { font-size: 24px; }
+}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>{% if artigo %}Editar artigo{% else %}Novo artigo{% endif %}</h2>
+    <p class="muted">Cria procedimentos, explicações e ajudas contextuais para a operação.</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('conhecimento_index') }}">Voltar</a>
+</div>
+
+<form method="post" class="modern-form">
+  <div class="grid">
+    <label>Título
+      <input name="titulo" value="{{ artigo.titulo if artigo else '' }}" required>
+    </label>
+    <label>Slug
+      <input name="slug" value="{{ artigo.slug if artigo else '' }}" placeholder="gerado automaticamente se ficar vazio">
+    </label>
+    <label>Área
+      <select name="area" required>
+        {% for area in areas %}
+          <option value="{{ area }}" {% if artigo and artigo.area == area %}selected{% endif %}>{{ area }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Tema
+      <input name="tema" value="{{ artigo.tema if artigo else '' }}">
+    </label>
+    <label>Estado
+      <select name="estado">
+        {% for estado in ['Publicado', 'Rascunho'] %}
+          <option value="{{ estado }}" {% if artigo and artigo.estado == estado %}selected{% endif %}>{{ estado }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label><input type="checkbox" name="visivel_contexto" {% if not artigo or artigo.visivel_contexto %}checked{% endif %}> Disponível como ajuda contextual</label>
+  </div>
+  <label>Resumo
+    <textarea name="resumo">{{ artigo.resumo if artigo else '' }}</textarea>
+  </label>
+  <label>Conteúdo
+    <textarea name="conteudo" class="large-textarea" required>{{ artigo.conteudo if artigo else '' }}</textarea>
+  </label>
+  <button>Guardar artigo</button>
+</form>
+
+{% endblock %}

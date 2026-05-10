@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>{{ artigo.titulo }}</h2>
+    <p class="muted">{{ artigo.area }}{% if artigo.tema %} · {{ artigo.tema }}{% endif %}</p>
+  </div>
+  <div class="hero-actions">
+    {% if current_user.role in ['Admin', 'Gestor'] %}
+      <a class="button secondary" href="{{ url_for('conhecimento_editar', artigo_id=artigo.id) }}">Editar</a>
+    {% endif %}
+    <a class="button secondary" href="{{ url_for('conhecimento_index') }}">Voltar</a>
+  </div>
+</div>
+
+{% if artigo.resumo %}
+  <div class="card">
+    <h3>Resumo</h3>
+    <p>{{ artigo.resumo }}</p>
+  </div>
+{% endif %}
+
+<article class="knowledge-article">
+  {% for bloco in artigo.conteudo.split('\n\n') %}
+    {% set linhas = bloco.split('\n') %}
+    {% if linhas|length == 1 and not linhas[0].startswith('-') and linhas[0]|length < 70 %}
+      <h3>{{ linhas[0] }}</h3>
+    {% else %}
+      <p>
+        {% for linha in linhas %}
+          {% if linha.startswith('-') %}
+            <span class="knowledge-bullet">{{ linha }}</span>
+          {% else %}
+            {{ linha }}{% if not loop.last %}<br>{% endif %}
+          {% endif %}
+        {% endfor %}
+      </p>
+    {% endif %}
+  {% endfor %}
+</article>
+
+{% endblock %}

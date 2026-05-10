@@ -1,0 +1,10 @@
+{% if context_help %}
+  <aside class="context-help">
+    <div>
+      <strong>Ajuda deste ecrã</strong>
+      <span>{{ context_help.titulo }}</span>
+    </div>
+    <p>{{ context_help.resumo or '' }}</p>
+    <a class="button secondary" href="{{ url_for('conhecimento_detail', slug=context_help.slug) }}">Ver explicação</a>
+  </aside>
+{% endif %}

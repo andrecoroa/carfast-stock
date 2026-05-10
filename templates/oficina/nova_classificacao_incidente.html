@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <h2>Nova Classificação</h2>
+  <a class="button secondary" href="{{ url_for('incidentes_classificacoes') }}">Voltar</a>
+</div>
+
+<form method="post">
+  <div class="grid">
+    <label>Categoria
+      <select name="categoria_id" required>
+        {% for c in categorias %}
+          <option value="{{ c.id }}">{{ c.nome }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Nome <input name="nome" required></label>
+    <label>Prioridade default
+      <select name="prioridade_default">
+        {% for g in gravidades %}
+          <option value="{{ g }}" {% if g == 'Média' %}selected{% endif %}>{{ g }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Faturável default
+      <select name="faturavel_default">
+        {% for f in faturaveis %}
+          <option value="{{ f }}" {% if f == 'A avaliar' %}selected{% endif %}>{{ f }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>SLA horas <input name="sla_horas_default" type="number" value="24"></label>
+    <label>Equipa responsável <input name="equipa_responsavel_default"></label>
+  </div>
+  <label><input type="checkbox" name="gera_tarefa" checked> Gera tarefa automaticamente</label>
+  <label><input type="checkbox" name="exige_anexo"> Exige anexo</label>
+  <label><input type="checkbox" name="ativo" checked> Ativa</label>
+  <label>Descrição <textarea name="descricao"></textarea></label>
+  <label>Instruções <textarea name="instrucoes"></textarea></label>
+  <button>Criar classificação</button>
+</form>
+
+{% endblock %}

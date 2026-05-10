@@ -5,17 +5,43 @@
 
 <div class="hub-grid">
 
-  <a class="hub-card" href="{{ url_for('stock_home') }}">
-    <div class="hub-icon">📦</div>
-    <h2>Gestão de Stock</h2>
-    <p>Artigos, movimentos, histórico, consumos e controlo de stock.</p>
+  <a class="hub-card" href="{{ url_for('centro_tarefas') }}">
+    <div class="hub-icon">◎</div>
+    <h2>Comunicação e tarefas</h2>
+    <p>Tarefas, pedidos, incidentes, reportes, comentários e sugestões internas.</p>
   </a>
 
   <a class="hub-card" href="{{ url_for('manutencao_home') }}">
     <div class="hub-icon">🔧</div>
-    <h2>Gestão de Manutenção</h2>
-    <p>Processos, diagnósticos, FO, validações e histórico técnico da viatura.</p>
+    <h2>Oficina</h2>
+    <p>Processos, diagnósticos, FO, validações, protocolos, peças e stock.</p>
   </a>
+
+  <a class="hub-card" href="{{ url_for('frota_home') }}">
+    <div class="hub-icon">▦</div>
+    <h2>Frota</h2>
+    <p>Viaturas, ficha completa, incidentes, timeline, sinistros e venda de usados.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('gestao_home') }}">
+    <div class="hub-icon">📊</div>
+    <h2>Gestão</h2>
+    <p>Auditoria, custos, contratos, faturas, históricos Rentway e relatórios.</p>
+  </a>
+
+  <a class="hub-card" href="{{ url_for('conhecimento_index') }}">
+    <div class="hub-icon">?</div>
+    <h2>Centro de Conhecimento</h2>
+    <p>Manual operacional vivo, procedimentos, explicações e boas práticas da app.</p>
+  </a>
+
+  {% if current_user.role == 'Admin' %}
+    <a class="hub-card" href="{{ url_for('admin_home') }}">
+      <div class="hub-icon">⚙</div>
+      <h2>Administração e configurações</h2>
+      <p>Utilizadores, permissões, classificações, regras, campos e parâmetros.</p>
+    </a>
+  {% endif %}
 
 </div>
 

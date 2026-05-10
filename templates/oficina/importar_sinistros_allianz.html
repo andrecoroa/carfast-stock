@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h2>Importar Sinistros Allianz</h2>
+  <a class="button secondary" href="{{ url_for('sinistros_allianz') }}">Voltar aos sinistros</a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  <label>Responsavel
+    <input name="responsavel" placeholder="Nome de quem esta a importar">
+  </label>
+  <label>Ficheiro de sinistros Allianz
+    <input type="file" name="ficheiro" accept=".xlsx,.xlsm" required>
+  </label>
+  <button type="submit">Importar sinistros</button>
+</form>
+
+<p class="muted">Regra atual: a mesma matricula na mesma data conta como um unico sinistro. Se houver varias linhas, os valores sao somados e as referencias/causas ficam agregadas.</p>
+
+<h3>Ultimas importacoes</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Ficheiro</th>
+      <th>Linhas</th>
+      <th>Criadas</th>
+      <th>Atualizadas</th>
+      <th>Ignoradas</th>
+      <th>Responsavel</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in importacoes %}
+      <tr>
+        <td>{{ i.criado_em }}</td>
+        <td>{{ i.original_name }}</td>
+        <td>{{ i.total_linhas }}</td>
+        <td>{{ i.criadas }}</td>
+        <td>{{ i.atualizadas }}</td>
+        <td>{{ i.ignoradas }}</td>
+        <td>{{ i.responsavel or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="7">Ainda nao existem importacoes de sinistros Allianz.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Novo Registo</h2>
+    <p class="muted">Criar uma tarefa, pedido, incidente ou sugestão em menos de 30 segundos.</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('centro_tarefas') }}">Voltar</a>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="modern-form">
+  <div class="grid">
+    <label>Categoria
+      <select name="categoria" required>
+        {% for c in categorias %}
+          <option value="{{ c }}">{{ c }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Departamento
+      <select name="departamento" required>
+        {% for d in departamentos %}
+          <option value="{{ d }}" {% if current_user.departamento == d %}selected{% endif %}>{{ d }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Prioridade
+      <select name="prioridade">
+        {% for p in prioridades %}
+          <option value="{{ p }}" {% if p == 'Média' %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Responsável <input name="responsavel"></label>
+    <label>Matrícula <input name="matricula"></label>
+    <label>Estação <input name="estacao"></label>
+    <label>Cliente <input name="cliente"></label>
+    <label>Data limite <input name="data_limite" type="datetime-local"></label>
+  </div>
+  <label>Assunto <input name="assunto" required></label>
+  <label>Descrição <textarea name="descricao" required></textarea></label>
+  <label>Anexos <input type="file" name="anexos" multiple></label>
+  <button>Criar registo</button>
+</form>
+
+{% endblock %}

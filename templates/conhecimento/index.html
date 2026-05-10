@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-head">
+  <div>
+    <h2>Centro de Conhecimento</h2>
+    <p class="muted">Manual operacional vivo, procedimentos, explicações e boas práticas.</p>
+  </div>
+  {% if current_user.role in ['Admin', 'Gestor'] %}
+    <a class="button" href="{{ url_for('conhecimento_novo') }}">Novo artigo</a>
+  {% endif %}
+</div>
+
+<form class="filter-form" method="get">
+  <div class="grid">
+    <label>Área
+      <select name="area">
+        <option value="">Todas</option>
+        {% for a in areas %}
+          <option value="{{ a.area }}" {% if filtros.area == a.area %}selected{% endif %}>{{ a.area }} ({{ a.total }})</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Pesquisar
+      <input name="q" value="{{ filtros.q }}" placeholder="processo, frota, faturas, venda...">
+    </label>
+  </div>
+  <button>Filtrar</button>
+  <a class="button secondary" href="{{ url_for('conhecimento_index') }}">Limpar</a>
+</form>
+
+<div class="knowledge-grid">
+  {% for artigo in artigos %}
+    <a class="knowledge-card" href="{{ url_for('conhecimento_detail', slug=artigo.slug) }}">
+      <span>{{ artigo.area }}</span>
+      <h3>{{ artigo.titulo }}</h3>
+      <p>{{ artigo.resumo or '' }}</p>
+      <small>{{ artigo.tema or '' }}</small>
+    </a>
+  {% else %}
+    <div class="empty-state">Sem artigos encontrados.</div>
+  {% endfor %}
+</div>
+
+{% endblock %}

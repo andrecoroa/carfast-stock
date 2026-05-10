@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-hero">
+  <div>
+    <h2>Centro de Tarefas</h2>
+    <p>Crie, acompanhe e resolva tarefas, pedidos, incidentes e sugestões.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="button" href="{{ url_for('centro_tarefas_novo') }}">Novo Registo</a>
+    {% if current_user.role in ['Admin', 'Gestor'] %}
+      <a class="button secondary" href="{{ url_for('centro_tarefas_exportar') }}">Exportar</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="task-type-grid">
+  {% set info = {
+    'Tarefas': ['task-blue', 'Execução operacional e follow-up diário.'],
+    'Pedidos / Dúvidas': ['task-yellow', 'Pedidos internos, apoio e esclarecimentos.'],
+    'Incidentes / Reportes': ['task-red', 'Problemas, erros e comunicações relevantes.'],
+    'Sugestões': ['task-green', 'Ideias de melhoria e automação.']
+  } %}
+  {% for cat in categorias %}
+    <a class="task-type-card {{ info[cat][0] }}" href="{{ url_for('centro_tarefas', categoria=cat) }}">
+      <span>{{ resumo.get(cat, 0) }}</span>
+      <strong>{{ cat }}</strong>
+      <p>{{ info[cat][1] }}</p>
+    </a>
+  {% endfor %}
+</div>
+
+<div class="task-tabs">
+  <a class="task-tab {% if not filtros.categoria %}active{% endif %}" href="{{ url_for('centro_tarefas') }}">Tudo</a>
+  {% for cat in categorias %}
+    <a class="task-tab {% if filtros.categoria == cat %}active{% endif %}" href="{{ url_for('centro_tarefas', categoria=cat) }}">{{ cat }}</a>
+  {% endfor %}
+</div>
+
+<form method="get" class="filter-form modern-filter">
+  <input type="hidden" name="page" value="1">
+  <div class="grid">
+    <label>Pesquisa <input name="q" value="{{ filtros.q }}" placeholder="Assunto, matrícula, cliente..."></label>
+    <label>Categoria
+      <select name="categoria">
+        <option value="">Todas</option>
+        {% for c in categorias %}
+          <option value="{{ c }}" {% if filtros.categoria == c %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Estado
+      <select name="estado">
+        <option value="">Todos</option>
+        {% for cat, estados in estados_por_categoria.items() %}
+          {% for e in estados %}
+            <option value="{{ e }}" {% if filtros.estado == e %}selected{% endif %}>{{ e }}</option>
+          {% endfor %}
+        {% endfor %}
+      </select>
+    </label>
+    <label>Prioridade
+      <select name="prioridade">
+        <option value="">Todas</option>
+        {% for p in prioridades %}
+          <option value="{{ p }}" {% if filtros.prioridade == p %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Departamento
+      <select name="departamento">
+        <option value="">Todos</option>
+        {% for d in departamentos %}
+          <option value="{{ d }}" {% if filtros.departamento == d %}selected{% endif %}>{{ d }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+  <button>Filtrar</button>
+  <a class="button secondary" href="{{ url_for('centro_tarefas') }}">Limpar</a>
+</form>
+
+<div class="table-shell">
+  <table class="modern-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Tipo</th>
+        <th>Assunto</th>
+        <th>Departamento</th>
+        <th>Estado</th>
+        <th>Prioridade</th>
+        <th>Responsável</th>
+        <th>Data</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in tarefas %}
+        <tr>
+          <td>#{{ t.id }}</td>
+          <td><span class="badge soft">{{ t.categoria }}</span></td>
+          <td>
+            <strong>{{ t.assunto }}</strong>
+            <div class="muted">{{ t.matricula or t.cliente or '' }}</div>
+          </td>
+          <td>{{ t.departamento }}</td>
+          <td><span class="state-badge state-{{ t.estado|lower|replace(' ', '-')|replace('ç','c')|replace('ã','a') }}">{{ t.estado }}</span></td>
+          <td><span class="priority-badge priority-{{ t.prioridade|lower }}">{{ t.prioridade }}</span></td>
+          <td>{{ t.responsavel or 'Por atribuir' }}</td>
+          <td>{{ t.criado_em }}</td>
+          <td><a href="{{ url_for('centro_tarefa_detail', tarefa_id=t.id) }}">abrir</a></td>
+        </tr>
+      {% else %}
+        <tr><td colspan="9">Sem registos para os filtros atuais.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="pagination">
+  {% if pagination.page > 1 %}
+    <a class="button secondary" href="{{ url_for('centro_tarefas', categoria=filtros.categoria, estado=filtros.estado, prioridade=filtros.prioridade, departamento=filtros.departamento, q=filtros.q, page=pagination.page - 1) }}">Anterior</a>
+  {% endif %}
+  <span>Página {{ pagination.page }} de {{ pagination.pages }} · {{ pagination.total }} registos</span>
+  {% if pagination.page < pagination.pages %}
+    <a class="button secondary" href="{{ url_for('centro_tarefas', categoria=filtros.categoria, estado=filtros.estado, prioridade=filtros.prioridade, departamento=filtros.departamento, q=filtros.q, page=pagination.page + 1) }}">Seguinte</a>
+  {% endif %}
+</div>
+
+{% endblock %}

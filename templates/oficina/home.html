@@ -2,27 +2,65 @@
 {% block content %}
 
 <div class="page-head">
-  <h2>🔧 Gestão de Manutenção</h2>
+  <div>
+    <h2>Oficina</h2>
+    <p class="muted">Execução técnica, processos ativos, diagnósticos, protocolos e stock de apoio.</p>
+  </div>
   <a class="button secondary" href="{{ url_for('home') }}">Voltar ao início</a>
 </div>
 
-<div class="hub-grid">
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Processos de oficina</h3>
+      <span class="muted">Trabalho operacional criado e acompanhado na app.</span>
+    </div>
+  </div>
+  <div class="action-grid">
+    <a class="hub-card primary-action" href="{{ url_for('novo_processo') }}">
+      <h3>Novo processo</h3>
+      <p>Abrir processo com Nº Impro, matrícula, KM, responsável e problema inicial.</p>
+    </a>
+    <a class="hub-card primary-action" href="{{ url_for('processos') }}">
+      <h3>Processos ativos</h3>
+      <p>Consultar processos de oficina, estados, FO, diagnósticos, validações e evolução.</p>
+    </a>
+  </div>
+</section>
 
-  <a class="hub-card" href="{{ url_for('processos') }}">
-    <h3>Processos</h3>
-    <p>Consultar processos de oficina, estados e evolução.</p>
-  </a>
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Protocolos e diagnósticos</h3>
+      <span class="muted">Regras técnicas, checklists e importação de diagnósticos de apoio.</span>
+    </div>
+  </div>
+  <div class="action-grid">
+    <a class="hub-card" href="{{ url_for('protocolos_home') }}">
+      <h3>Motor de Protocolos</h3>
+      <p>Aplicar e gerir checklists dinâmicas por viatura, intervenção e motorização.</p>
+    </a>
+    <a class="hub-card" href="{{ url_for('importar_diagnosticos_pdf_view') }}">
+      <h3>Importar Diagnósticos PDF</h3>
+      <p>Carregar relatórios Autel, manutenção e lubrificação como histórico técnico.</p>
+    </a>
+  </div>
+</section>
 
-  <a class="hub-card" href="{{ url_for('novo_processo') }}">
-    <h3>Novo Processo</h3>
-    <p>Abrir processo com Nº Impro, matrícula, KM e problema inicial.</p>
-  </a>
-
-  <a class="hub-card" href="{{ url_for('viaturas') }}">
-    <h3>Viaturas</h3>
-    <p>Consultar fichas, histórico técnico e diagnósticos por matrícula.</p>
-  </a>
-
-</div>
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Stock de oficina</h3>
+      <span class="muted">Peças, consumíveis, entradas, saídas e ajustes.</span>
+    </div>
+    <a class="button secondary" href="{{ url_for('stock_home') }}">Ver área de stock</a>
+  </div>
+  <div class="quick-link-grid">
+    <a href="{{ url_for('novo_movimento') }}">Novo movimento</a>
+    <a href="{{ url_for('index') }}">Stock atual</a>
+    <a href="{{ url_for('movimentos') }}">Histórico de movimentos</a>
+    <a href="{{ url_for('novo_artigo') }}">Novo artigo</a>
+  </div>
+</section>
 
 {% endblock %}

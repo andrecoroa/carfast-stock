@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h2>Importar Contratos Rentway</h2>
+  <a class="button secondary" href="{{ url_for('contratos_rentway') }}">Voltar aos contratos</a>
+</div>
+
+<div class="cards">
+  <div class="card">
+    <h3>Histórico financeiro</h3>
+    <form method="post" enctype="multipart/form-data" class="mini-form">
+      <input type="hidden" name="tipo" value="financeiro">
+      <label>Responsavel
+        <input name="responsavel" placeholder="Nome de quem esta a importar">
+      </label>
+      <label>Ficheiro Histórico de contratos
+        <input type="file" name="ficheiro" accept=".xlsx,.xlsm" required>
+      </label>
+      <button type="submit">Importar financeiro</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Viaturas por contrato</h3>
+    <form method="post" enctype="multipart/form-data" class="mini-form">
+      <input type="hidden" name="tipo" value="viaturas">
+      <label>Responsavel
+        <input name="responsavel" placeholder="Nome de quem esta a importar">
+      </label>
+      <label>Ficheiro veículos alugados por cliente
+        <input type="file" name="ficheiro" accept=".xlsx,.xlsm" required>
+      </label>
+      <button type="submit">Importar viaturas</button>
+    </form>
+  </div>
+</div>
+
+<h3>Ultimas importacoes</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Tipo</th>
+      <th>Ficheiro</th>
+      <th>Linhas</th>
+      <th>Criadas</th>
+      <th>Atualizadas</th>
+      <th>Ignoradas</th>
+      <th>Observacoes</th>
+      <th>Responsavel</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in importacoes %}
+      <tr>
+        <td>{{ i.criado_em }}</td>
+        <td>{{ i.tipo }}</td>
+        <td>{{ i.original_name }}</td>
+        <td>{{ i.total_linhas }}</td>
+        <td>{{ i.criadas }}</td>
+        <td>{{ i.atualizadas }}</td>
+        <td>{{ i.ignoradas }}</td>
+        <td>{{ i.observacoes or '' }}</td>
+        <td>{{ i.responsavel or '' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="9">Ainda nao existem importacoes de contratos.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
