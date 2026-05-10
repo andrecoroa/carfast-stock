@@ -3149,14 +3149,15 @@ def import_impros_excel(path, original_name, responsavel=None):
 
 
 def safe_cell(value):
+    if value is None:
+        return None
     try:
-        import pandas as pd
-        if pd.isna(value):
+        if value != value:
             return None
-        if hasattr(value, "isoformat"):
-            return value.isoformat()
     except Exception:
         pass
+    if hasattr(value, "isoformat"):
+        return value.isoformat()
     return value
 
 
