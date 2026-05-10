@@ -6,6 +6,7 @@ import unicodedata
 import calendar
 import re
 import shutil
+import traceback
 from io import BytesIO
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -8120,7 +8121,13 @@ def uploaded_file(filename):
     return send_file(UPLOAD_DIR / filename, as_attachment=True)
 
 
-init_db()
+try:
+    init_db()
+    print("CarFast startup: init_db concluido.", flush=True)
+except Exception:
+    print("CarFast startup: erro no init_db.", flush=True)
+    traceback.print_exc()
+    raise
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
