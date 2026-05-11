@@ -7985,10 +7985,22 @@ def viatura_detail(viatura_id):
             (viatura_id,)
         ).fetchone()
 
-        processos_rows = c.execute(
-            "SELECT * FROM processos WHERE viatura_id = ? ORDER BY id DESC",
-            (viatura_id,)
-        ).fetchall()
+        processos_rows = c.execute("""
+            SELECT *
+            FROM processos
+            WHERE viatura_id = ?
+              AND COALESCE(arquivo, 0) = 0
+            ORDER BY id DESC
+        """, (viatura_id,)).fetchall()
+
+        processos_arquivo_rows = c.execute("""
+            SELECT *
+            FROM processos
+            WHERE viatura_id = ?
+              AND COALESCE(arquivo, 0) = 1
+            ORDER BY COALESCE(data_fecho, data_abertura) DESC, id DESC
+            LIMIT 50
+        """, (viatura_id,)).fetchall()
 
         impros_rentway_rows = c.execute("""
             SELECT *
@@ -8081,6 +8093,39 @@ def viatura_detail(viatura_id):
             LIMIT 50
         """, (viatura_id, v["matricula"])).fetchall()
 
+        historico_resumo = {
+            "processos_ativos": len(processos_rows),
+            "processos_arquivo": len(processos_arquivo_rows),
+            "impros": c.execute("""
+                SELECT COUNT(*) total
+                FROM rentway_impros
+                WHERE viatura_id = ? OR matricula = ?
+            """, (viatura_id, v["matricula"])).fetchone()["total"],
+            "folhas_obra": c.execute("""
+                SELECT COUNT(*) total
+                FROM rentway_folhas_obra
+                WHERE viatura_id = ? OR matricula = ?
+            """, (viatura_id, v["matricula"])).fetchone()["total"],
+            "contratos_unicos": c.execute("""
+                SELECT COUNT(DISTINCT contrato_nr) total
+                FROM contratos_viaturas
+                WHERE viatura_id = ? OR matricula = ?
+            """, (viatura_id, v["matricula"])).fetchone()["total"],
+            "contratos_movimentos": c.execute("""
+                SELECT COUNT(*) total
+                FROM contratos_viaturas
+                WHERE viatura_id = ? OR matricula = ?
+            """, (viatura_id, v["matricula"])).fetchone()["total"],
+            "faturas_docs": len(faturas_fornecedores_docs),
+            "sinistros": len(sinistros_allianz_rows),
+            "ars": len(ars_rentway_rows),
+            "diagnosticos": c.execute("""
+                SELECT COUNT(*) total
+                FROM diagnosticos
+                WHERE viatura_id = ?
+            """, (viatura_id,)).fetchone()["total"],
+        }
+
         diags = c.execute("""
             SELECT d.*, p.numero_impro
             FROM diagnosticos d
@@ -8114,6 +8159,8 @@ def viatura_detail(viatura_id):
         "oficina/viatura_detail.html",
         v=v,
         processos=processos_rows,
+        processos_arquivo=processos_arquivo_rows,
+        historico_resumo=historico_resumo,
         impros_rentway=impros_rentway_rows,
         folhas_obra_rentway=folhas_obra_rentway_rows,
         sinistros_allianz=sinistros_allianz_rows,

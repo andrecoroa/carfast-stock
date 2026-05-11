@@ -119,7 +119,19 @@
   <button>Guardar ficha</button>
 </form>
 
-<h3>Processos</h3>
+<h3>Resumo do histórico da viatura</h3>
+<div class="summary-grid">
+  <div class="summary-card"><strong>Processos ativos</strong><span>{{ historico_resumo.processos_ativos }}</span><small>Trabalho operacional criado na app.</small></div>
+  <div class="summary-card"><strong>Arquivo técnico</strong><span>{{ historico_resumo.processos_arquivo }}</span><small>Histórico importado/fechado, sem entrar na gestão ativa.</small></div>
+  <div class="summary-card"><strong>Impros Rentway</strong><span>{{ historico_resumo.impros }}</span><small>Histórico operacional importado.</small></div>
+  <div class="summary-card"><strong>FO Rentway</strong><span>{{ historico_resumo.folhas_obra }}</span><small>Folhas de obra importadas.</small></div>
+  <div class="summary-card"><strong>Contratos</strong><span>{{ historico_resumo.contratos_unicos }}</span><small>{{ historico_resumo.contratos_movimentos }} movimentos de viatura.</small></div>
+  <div class="summary-card"><strong>Faturas</strong><span>{{ historico_resumo.faturas_docs }}</span><small>Documentos de fornecedores agrupados.</small></div>
+  <div class="summary-card"><strong>Sinistros / ARs</strong><span>{{ historico_resumo.sinistros }} / {{ historico_resumo.ars }}</span><small>Participações Allianz e ARs Rentway.</small></div>
+  <div class="summary-card"><strong>Diagnósticos</strong><span>{{ historico_resumo.diagnosticos }}</span><small>PDFs e diagnósticos registados.</small></div>
+</div>
+
+<h3>Processos ativos na app</h3>
 <table>
   <thead><tr><th>Impro</th><th>Estado</th><th>Abertura</th><th></th></tr></thead>
   <tbody>
@@ -127,6 +139,26 @@
       <tr><td>{{ p.numero_impro }}</td><td>{{ p.estado }}</td><td>{{ p.data_abertura }}</td><td><a href="{{ url_for('processo_detail', processo_id=p.id) }}">abrir</a></td></tr>
     {% else %}
       <tr><td colspan="4">Sem processos registados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Arquivo técnico da viatura</h3>
+<p class="muted">Processos importados ou fechados que contam para histórico, mas não entram na gestão operacional ativa.</p>
+<table>
+  <thead><tr><th>Impro</th><th>Estado</th><th>Abertura</th><th>Fecho</th><th>Origem</th><th></th></tr></thead>
+  <tbody>
+    {% for p in processos_arquivo %}
+      <tr>
+        <td>{{ p.numero_impro or '' }}</td>
+        <td>{{ p.estado or '' }}</td>
+        <td>{{ p.data_abertura or '' }}</td>
+        <td>{{ p.data_fecho or '' }}</td>
+        <td>{{ p.origem or 'Arquivo' }}</td>
+        <td><a href="{{ url_for('processo_detail', processo_id=p.id) }}">abrir</a></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6">Sem processos arquivados nesta viatura.</td></tr>
     {% endfor %}
   </tbody>
 </table>
@@ -258,7 +290,8 @@
   </tbody>
 </table>
 
-<h3>Histórico Rentway - Contratos</h3>
+<h3>Histórico Rentway - Contratos da viatura</h3>
+<p class="muted">Mostra contratos/movimentos associados a esta matrícula. Um contrato pode ter mais do que uma viatura, por isso esta contagem não é o total financeiro da empresa.</p>
 <table>
   <thead>
     <tr>
