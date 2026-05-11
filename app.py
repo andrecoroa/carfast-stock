@@ -2608,10 +2608,18 @@ def meses_entre_datas(data_inicio, data_fim=None):
     return max(0, meses)
 
 
+def meses_depreciacao_por_mes_civil(data_inicio, data_fim=None):
+    if not data_inicio:
+        return 0
+    data_fim = data_fim or datetime.now().date()
+    meses = (data_fim.year - data_inicio.year) * 12 + (data_fim.month - data_inicio.month)
+    return max(0, meses)
+
+
 def calcular_depreciacao_venda(valor_aquisicao, data_aquisicao):
     valor = clean_float(valor_aquisicao) or 0
     data = parse_iso_date(data_aquisicao)
-    meses = min(meses_entre_datas(data), 96) if data else 0
+    meses = min(meses_depreciacao_por_mes_civil(data), 96) if data else 0
     depreciacao_mensal = round(valor / 96, 2) if valor else 0
     depreciacao_acumulada = round(depreciacao_mensal * meses, 2)
     valor_atual = round(max(0, valor - depreciacao_acumulada), 2)
