@@ -4,43 +4,81 @@
 <div class="page-head">
   <div>
     <h2>Frota</h2>
-    <p class="muted">Entidade permanente da viatura, histórico, incidentes, timeline e venda.</p>
+    <p class="muted">Viaturas como entidade permanente, operação, histórico, incidentes e venda.</p>
   </div>
   <a class="button secondary" href="{{ url_for('home') }}">Voltar ao início</a>
 </div>
 
-<div class="hub-grid">
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Operacional</h3>
+      <span class="muted">Consulta e execução diária sobre viaturas.</span>
+    </div>
+  </div>
+  <div class="action-grid">
+    <a class="hub-card primary-action" href="{{ url_for('viaturas') }}">
+      <h3>Viaturas</h3>
+      <p>Consultar frota, filtros, estados, ficha completa e histórico por matrícula.</p>
+    </a>
+    <a class="hub-card primary-action" href="{{ url_for('incidentes_frota') }}">
+      <h3>Incidentes Frota</h3>
+      <p>Registar e acompanhar problemas de viaturas, oficinas, clientes e preparação.</p>
+    </a>
+    <a class="hub-card" href="{{ url_for('tarefas_frota') }}">
+      <h3>Tarefas Frota</h3>
+      <p>Vista filtrada do Centro de Tarefas para follow-up de incidentes de frota.</p>
+    </a>
+    <a class="hub-card" href="{{ url_for('venda_usados') }}">
+      <h3>Venda de Usados</h3>
+      <p>Selecionar viaturas, rever escolhidas, ajustar valores e exportar listagem.</p>
+    </a>
+  </div>
+</section>
 
-  <a class="hub-card" href="{{ url_for('viaturas') }}">
-    <h3>Viaturas</h3>
-    <p>Consultar frota, filtros, estados, ficha completa e histórico por matrícula.</p>
-  </a>
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Histórico / Arquivo</h3>
+      <span class="muted">Leitura consolidada da vida da viatura e documentos associados.</span>
+    </div>
+  </div>
+  <div class="quick-link-grid">
+    <a href="{{ url_for('auditoria_viatura_timeline') }}">Timeline da viatura</a>
+    <a href="{{ url_for('contratos_rentway') }}">Contratos Rentway</a>
+    <a href="{{ url_for('sinistros_allianz') }}">Sinistros com participação</a>
+    <a href="{{ url_for('ars_rentway') }}">ARs Rentway</a>
+    <a href="{{ url_for('folhas_obra_rentway') }}">Folhas de obra</a>
+    <a href="{{ url_for('faturas_fornecedores') }}">Faturas de fornecedores</a>
+  </div>
+</section>
 
-  <a class="hub-card" href="{{ url_for('importar_frota_view') }}">
-    <h3>Importar Frota Rentway</h3>
-    <p>Atualizar a frota completa a partir do relatório integral do Rentway.</p>
-  </a>
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Importações</h3>
+      <span class="muted">Atualizações de origem externa que alimentam a frota e o histórico.</span>
+    </div>
+  </div>
+  <div class="quick-link-grid">
+    <a href="{{ url_for('importar_frota_view') }}">Importar frota Rentway</a>
+    <a href="{{ url_for('importar_contratos_rentway_view') }}">Importar contratos</a>
+    <a href="{{ url_for('importar_sinistros_allianz_view') }}">Importar sinistros Allianz</a>
+    <a href="{{ url_for('importar_ars_rentway_view') }}">Importar ARs Rentway</a>
+  </div>
+</section>
 
-  <a class="hub-card" href="{{ url_for('auditoria_viatura_timeline') }}">
-    <h3>Timeline da Viatura</h3>
-    <p>Ver contratos, impros, documentos, custos e diagnósticos numa linha temporal.</p>
-  </a>
-
-  <a class="hub-card" href="{{ url_for('incidentes_frota') }}">
-    <h3>Incidentes Frota</h3>
-    <p>Registar e acompanhar problemas de viaturas, oficinas, clientes e preparação.</p>
-  </a>
-
-  <a class="hub-card" href="{{ url_for('tarefas_frota') }}">
-    <h3>Tarefas Frota</h3>
-    <p>Acompanhar follow-up gerado por incidentes específicos da frota.</p>
-  </a>
-
-  <a class="hub-card" href="{{ url_for('venda_usados') }}">
-    <h3>Venda de Usados</h3>
-    <p>Selecionar viaturas, rever escolhidas, ajustar valores e exportar listagem para comércio.</p>
-  </a>
-
-</div>
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Parametrização</h3>
+      <span class="muted">Regras e classificações que estruturam a gestão da frota.</span>
+    </div>
+  </div>
+  <div class="quick-link-grid">
+    <a href="{{ url_for('incidentes_classificacoes') }}">Classificações de incidentes</a>
+    <a href="{{ url_for('conhecimento_index') }}?area=Frota">Conhecimento de frota</a>
+  </div>
+</section>
 
 {% endblock %}

@@ -4,7 +4,7 @@
 <div class="page-head">
   <div>
     <h2>Gestão</h2>
-    <p class="muted">Auditoria, custos, arquivo Rentway e suporte à decisão.</p>
+    <p class="muted">Auditoria, custos, histórico importado e suporte à decisão.</p>
   </div>
   <a class="button secondary" href="{{ url_for('home') }}">Voltar ao início</a>
 </div>
@@ -12,8 +12,8 @@
 <section class="workspace-section">
   <div class="section-head">
     <div>
-      <h3>Análise e decisão</h3>
-      <span class="muted">Exceções, custos, desvios e prioridades de gestão.</span>
+      <h3>Operacional / Decisão</h3>
+      <span class="muted">Exceções, desvios, custos e prioridades de gestão.</span>
     </div>
   </div>
   <div class="action-grid">
@@ -35,7 +35,7 @@
 <section class="workspace-section">
   <div class="section-head">
     <div>
-      <h3>Arquivo Rentway</h3>
+      <h3>Histórico / Arquivo</h3>
       <span class="muted">Histórico importado para consulta, auditoria e cruzamentos.</span>
     </div>
   </div>
@@ -44,6 +44,39 @@
     <a href="{{ url_for('folhas_obra_rentway') }}">Folhas de obra</a>
     <a href="{{ url_for('ars_rentway') }}">ARs Rentway</a>
     <a href="{{ url_for('sinistros_allianz') }}">Sinistros Allianz</a>
+    <a href="{{ url_for('auditoria_viatura_timeline') }}">Timeline por viatura</a>
+  </div>
+</section>
+
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Importações</h3>
+      <span class="muted">Entrada de relatórios e documentos para análise e auditoria.</span>
+    </div>
+  </div>
+  <div class="quick-link-grid">
+    <a href="{{ url_for('importar_faturas_fornecedores_view') }}">Importar faturas</a>
+    <a href="{{ url_for('importar_contratos_rentway_view') }}">Importar contratos</a>
+    <a href="{{ url_for('importar_impros_view') }}">Importar impros</a>
+    <a href="{{ url_for('importar_folhas_obra_view') }}">Importar folhas de obra</a>
+    <a href="{{ url_for('importar_sinistros_allianz_view') }}">Importar sinistros</a>
+    <a href="{{ url_for('importar_ars_rentway_view') }}">Importar ARs</a>
+  </div>
+</section>
+
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Parametrização</h3>
+      <span class="muted">Parâmetros e conhecimento que suportam análise e gestão.</span>
+    </div>
+  </div>
+  <div class="quick-link-grid">
+    <a href="{{ url_for('conhecimento_index') }}?area=Gestão">Conhecimento de gestão</a>
+    {% if current_user.role == 'Admin' %}
+      <a href="{{ url_for('admin_home') }}">Configurações globais</a>
+    {% endif %}
   </div>
 </section>
 

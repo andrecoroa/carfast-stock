@@ -4,7 +4,7 @@
 <div class="page-head">
   <div>
     <h2>Oficina</h2>
-    <p class="muted">Execução técnica, processos ativos, diagnósticos, protocolos e stock de apoio.</p>
+    <p class="muted">Execução técnica, processos ativos, stock, histórico técnico e protocolos.</p>
   </div>
   <a class="button secondary" href="{{ url_for('home') }}">Voltar ao início</a>
 </div>
@@ -12,8 +12,8 @@
 <section class="workspace-section">
   <div class="section-head">
     <div>
-      <h3>Processos de oficina</h3>
-      <span class="muted">Trabalho operacional criado e acompanhado na app.</span>
+      <h3>Operacional</h3>
+      <span class="muted">Trabalho diário criado e acompanhado dentro da app.</span>
     </div>
   </div>
   <div class="action-grid">
@@ -23,26 +23,11 @@
     </a>
     <a class="hub-card primary-action" href="{{ url_for('processos') }}">
       <h3>Processos ativos</h3>
-      <p>Consultar processos de oficina, estados, FO, diagnósticos, validações e evolução.</p>
+      <p>Consultar estados, receção, diagnóstico, FO, tarefas, validações e evolução.</p>
     </a>
-  </div>
-</section>
-
-<section class="workspace-section">
-  <div class="section-head">
-    <div>
-      <h3>Protocolos e diagnósticos</h3>
-      <span class="muted">Regras técnicas, checklists e importação de diagnósticos de apoio.</span>
-    </div>
-  </div>
-  <div class="action-grid">
     <a class="hub-card" href="{{ url_for('protocolos_home') }}">
-      <h3>Motor de Protocolos</h3>
-      <p>Aplicar e gerir checklists dinâmicas por viatura, intervenção e motorização.</p>
-    </a>
-    <a class="hub-card" href="{{ url_for('importar_diagnosticos_pdf_view') }}">
-      <h3>Importar Diagnósticos PDF</h3>
-      <p>Carregar relatórios Autel, manutenção e lubrificação como histórico técnico.</p>
+      <h3>Aplicar protocolos</h3>
+      <p>Usar checklists técnicas nos processos de manutenção e validação.</p>
     </a>
   </div>
 </section>
@@ -50,7 +35,7 @@
 <section class="workspace-section">
   <div class="section-head">
     <div>
-      <h3>Stock de oficina</h3>
+      <h3>Stock Oficina</h3>
       <span class="muted">Peças, consumíveis, entradas, saídas e ajustes.</span>
     </div>
   </div>
@@ -59,6 +44,49 @@
     <a href="{{ url_for('index') }}">Stock atual</a>
     <a href="{{ url_for('movimentos') }}">Histórico de movimentos</a>
     <a href="{{ url_for('novo_artigo') }}">Novo artigo</a>
+  </div>
+</section>
+
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Histórico / Arquivo</h3>
+      <span class="muted">Dados importados para consulta, auditoria técnica e histórico da viatura.</span>
+    </div>
+  </div>
+  <div class="quick-link-grid">
+    <a href="{{ url_for('impros_rentway') }}">Histórico de impros</a>
+    <a href="{{ url_for('folhas_obra_rentway') }}">Histórico de folhas de obra</a>
+    <a href="{{ url_for('viaturas') }}">Histórico por viatura</a>
+    <a href="{{ url_for('auditoria_viatura_timeline') }}">Timeline da viatura</a>
+  </div>
+</section>
+
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Importações</h3>
+      <span class="muted">Entrada de ficheiros externos que alimentam o histórico técnico.</span>
+    </div>
+  </div>
+  <div class="quick-link-grid">
+    <a href="{{ url_for('importar_diagnosticos_pdf_view') }}">Importar diagnósticos PDF</a>
+    <a href="{{ url_for('importar_impros_view') }}">Importar impros Rentway</a>
+    <a href="{{ url_for('importar_folhas_obra_view') }}">Importar folhas de obra</a>
+  </div>
+</section>
+
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Parametrização</h3>
+      <span class="muted">Configuração técnica usada pelos processos. A gestão estrutural fica em Administração.</span>
+    </div>
+  </div>
+  <div class="quick-link-grid">
+    <a href="{{ url_for('protocolos_campos') }}">Biblioteca de campos</a>
+    <a href="{{ url_for('protocolos_regras') }}">Regras de protocolo</a>
+    <a href="{{ url_for('conhecimento_index') }}?area=Oficina">Conhecimento de oficina</a>
   </div>
 </section>
 

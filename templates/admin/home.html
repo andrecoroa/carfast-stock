@@ -4,38 +4,85 @@
 <div class="page-head">
   <div>
     <h2>Administração e configurações</h2>
-    <p class="muted">Acessos, classificações, regras, campos e estrutura operacional.</p>
+    <p class="muted">Acessos, regras, classificações, conhecimento e estrutura operacional.</p>
   </div>
   <a class="button secondary" href="{{ url_for('home') }}">Voltar ao início</a>
 </div>
 
-<div class="hub-grid">
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Acessos</h3>
+      <span class="muted">Utilizadores, perfis e responsabilidades.</span>
+    </div>
+  </div>
+  <div class="action-grid">
+    <a class="hub-card primary-action" href="{{ url_for('users') }}">
+      <h3>Utilizadores</h3>
+      <p>Gerir acessos, perfis, utilizadores ativos e criação de novos utilizadores.</p>
+    </a>
+    <a class="hub-card" href="{{ url_for('novo_user') }}">
+      <h3>Novo utilizador</h3>
+      <p>Criar acesso com perfil Admin, Gestor, Operador ou Consulta.</p>
+    </a>
+  </div>
+</section>
 
-  <a class="hub-card" href="{{ url_for('users') }}">
-    <h3>Utilizadores</h3>
-    <p>Gerir acessos, perfis, utilizadores ativos e criação de novos utilizadores.</p>
-  </a>
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Parametrização Operacional</h3>
+      <span class="muted">Regras, classificações e estruturas usadas pelas áreas.</span>
+    </div>
+  </div>
+  <div class="action-grid">
+    <a class="hub-card" href="{{ url_for('incidentes_classificacoes') }}">
+      <h3>Classificações de Incidentes</h3>
+      <p>Gerir subtipos de incidentes, prioridade, SLA e geração automática de tarefas.</p>
+    </a>
+    <a class="hub-card" href="{{ url_for('protocolos_campos') }}">
+      <h3>Biblioteca de Campos</h3>
+      <p>Gerir campos possíveis para protocolos dinâmicos e checklists.</p>
+    </a>
+    <a class="hub-card" href="{{ url_for('protocolos_regras') }}">
+      <h3>Regras de Protocolo</h3>
+      <p>Gerir regras base e futuras regras específicas por viatura ou intervenção.</p>
+    </a>
+  </div>
+</section>
 
-  <a class="hub-card" href="{{ url_for('incidentes_classificacoes') }}">
-    <h3>Classificações de Incidentes</h3>
-    <p>Gerir subtipos de incidentes, prioridade, SLA e geração automática de tarefas.</p>
-  </a>
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Conhecimento</h3>
+      <span class="muted">Manual operacional vivo e explicações por área.</span>
+    </div>
+  </div>
+  <div class="action-grid">
+    <a class="hub-card primary-action" href="{{ url_for('conhecimento_index') }}">
+      <h3>Centro de Conhecimento</h3>
+      <p>Consultar procedimentos, explicações e notas operacionais.</p>
+    </a>
+    <a class="hub-card" href="{{ url_for('conhecimento_novo') }}">
+      <h3>Novo artigo</h3>
+      <p>Adicionar procedimento ou explicação ao manual vivo da app.</p>
+    </a>
+  </div>
+</section>
 
-  <a class="hub-card" href="{{ url_for('protocolos_campos') }}">
-    <h3>Biblioteca de Campos</h3>
-    <p>Gerir campos possíveis para protocolos dinâmicos e checklists.</p>
-  </a>
-
-  <a class="hub-card" href="{{ url_for('protocolos_regras') }}">
-    <h3>Regras de Protocolo</h3>
-    <p>Gerir regras base e futuras regras específicas por viatura ou intervenção.</p>
-  </a>
-
-  <a class="hub-card" href="{{ url_for('conhecimento_index') }}">
-    <h3>Centro de Conhecimento</h3>
-    <p>Manual operacional vivo, explicações por área e procedimentos de utilização.</p>
-  </a>
-
-</div>
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Próximas Configurações</h3>
+      <span class="muted">Áreas previstas para quando a app evoluir mais.</span>
+    </div>
+  </div>
+  <div class="quick-link-grid">
+    <span>Mapeamentos Rentway</span>
+    <span>Parâmetros globais</span>
+    <span>Logs e auditoria técnica</span>
+    <span>Permissões detalhadas</span>
+  </div>
+</section>
 
 {% endblock %}
