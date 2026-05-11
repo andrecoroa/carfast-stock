@@ -4552,6 +4552,7 @@ def novo_user():
 
 @app.route("/centro-tarefas")
 def centro_tarefas():
+    vista = request.args.get("vista", "abertas")
     categoria = request.args.get("categoria", "")
     estado = request.args.get("estado", "")
     prioridade = request.args.get("prioridade", "")
@@ -4562,6 +4563,25 @@ def centro_tarefas():
 
     where = ["1=1"]
     params = []
+    estados_fechados = ["Concluído", "Fechado", "Resolvido", "Aceite", "Rejeitada", "Cancelado"]
+    if vista == "minhas":
+        where.append("(criado_por_id = ? OR responsavel LIKE ?)")
+        params.extend([session.get("user_id"), f"%{session.get('user_name') or ''}%"])
+    elif vista == "urgentes":
+        where.append("prioridade = 'Urgente'")
+        where.append(f"estado NOT IN ({', '.join('?' for _ in estados_fechados)})")
+        params.extend(estados_fechados)
+    elif vista == "departamento" and session.get("departamento"):
+        where.append("departamento = ?")
+        params.append(session.get("departamento"))
+    elif vista == "arquivo":
+        where.append(f"estado IN ({', '.join('?' for _ in estados_fechados)})")
+        params.extend(estados_fechados)
+    else:
+        vista = "abertas"
+        where.append(f"estado NOT IN ({', '.join('?' for _ in estados_fechados)})")
+        params.extend(estados_fechados)
+
     if categoria:
         where.append("categoria = ?")
         params.append(categoria)
@@ -4618,6 +4638,7 @@ def centro_tarefas():
         departamentos=CENTRO_TAREFAS_DEPARTAMENTOS,
         estados_por_categoria=CENTRO_TAREFAS_ESTADOS,
         filtros={
+            "vista": vista,
             "categoria": categoria,
             "estado": estado,
             "prioridade": prioridade,

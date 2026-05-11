@@ -4,110 +4,33 @@
 <div class="page-hero">
   <div>
     <h2>Centro de Tarefas</h2>
-    <p>Crie, acompanhe e resolva tarefas operacionais, gestão, implementação, pedidos, incidentes e sugestões.</p>
+    <p>Lista de trabalho interna para tarefas, pedidos, reportes, sugestões e follow-up.</p>
   </div>
   <div class="hero-actions">
-    <a class="button" href="{{ url_for('centro_tarefas_novo') }}">Novo Registo</a>
+    <a class="button" href="{{ url_for('centro_tarefas_novo') }}">Novo registo</a>
+    <a class="button secondary" href="{{ url_for('novo_incidente_frota') }}">Novo incidente frota</a>
     {% if current_user.role in ['Admin', 'Gestor'] %}
       <a class="button secondary" href="{{ url_for('centro_tarefas_exportar') }}">Exportar</a>
     {% endif %}
   </div>
 </div>
 
-{% set info = {
-  'Tarefas Operacionais': ['task-blue', 'Execução operacional e follow-up diário.'],
-  'Tarefas de Gestão': ['task-yellow', 'Coordenação, validações, decisões e acompanhamento.'],
-  'Tarefas de Implementação': ['task-green', 'Melhorias, sistemas, processos e alterações a implementar.'],
-  'Pedidos / Dúvidas': ['task-yellow', 'Pedidos internos, apoio e esclarecimentos.'],
-  'Incidentes / Reportes': ['task-red', 'Problemas, erros e comunicações relevantes.'],
-  'Sugestões': ['task-green', 'Ideias de melhoria e automação.']
-} %}
-
-<section class="workspace-section">
-  <div class="section-head">
-    <div>
-      <h3>Operacional</h3>
-      <span class="muted">Criação rápida de trabalho interno e acompanhamento diário.</span>
-    </div>
-  </div>
-  <div class="action-grid">
-    <a class="hub-card primary-action" href="{{ url_for('centro_tarefas_novo') }}">
-      <h3>Novo registo</h3>
-      <p>Criar tarefa, pedido, reporte ou sugestão para acompanhamento interno.</p>
-    </a>
-    <a class="hub-card" href="{{ url_for('centro_tarefas', categoria='Tarefas Operacionais') }}">
-      <h3>Tarefas Operacionais</h3>
-      <p>Execução diária, follow-up operacional e trabalho de rotina.</p>
-    </a>
-    <a class="hub-card" href="{{ url_for('centro_tarefas', categoria='Tarefas de Gestão') }}">
-      <h3>Tarefas de Gestão</h3>
-      <p>Coordenação, validações, decisões e acompanhamento de prioridades.</p>
-    </a>
-    <a class="hub-card" href="{{ url_for('centro_tarefas', categoria='Tarefas de Implementação') }}">
-      <h3>Tarefas de Implementação</h3>
-      <p>Melhorias, sistemas, processos e alterações a colocar em prática.</p>
-    </a>
-  </div>
-</section>
-
-<section class="workspace-section">
-  <div class="section-head">
-    <div>
-      <h3>Pedidos, Reportes e Ideias</h3>
-      <span class="muted">Comunicação interna, dúvidas, incidentes gerais e sugestões.</span>
-    </div>
-  </div>
-  <div class="task-type-grid">
-    {% for cat in ['Pedidos / Dúvidas', 'Incidentes / Reportes', 'Sugestões'] %}
-      <a class="task-type-card {{ info.get(cat, ['task-blue', 'Registos internos.'])[0] }}" href="{{ url_for('centro_tarefas', categoria=cat) }}">
-        <span>{{ resumo.get(cat, 0) }}</span>
-        <strong>{{ cat }}</strong>
-        <p>{{ info.get(cat, ['task-blue', 'Registos internos.'])[1] }}</p>
-      </a>
-    {% endfor %}
-  </div>
-</section>
-
-<section class="workspace-section">
-  <div class="section-head">
-    <div>
-      <h3>Incidentes Frota</h3>
-      <span class="muted">Atalho contextual para incidentes específicos de viaturas.</span>
-    </div>
-  </div>
-  <div class="action-grid">
-    <a class="hub-card" href="{{ url_for('incidentes_frota') }}">
-      <h3>Gerir incidentes frota</h3>
-      <p>Consultar incidentes ligados a viaturas, clientes, oficinas e preparação.</p>
-    </a>
-    <a class="hub-card primary-action" href="{{ url_for('novo_incidente_frota') }}">
-      <h3>Novo incidente frota</h3>
-      <p>Criar incidente com classificação, gravidade, anexos e opção de tarefa.</p>
-    </a>
-  </div>
-</section>
-
-<section class="workspace-section">
-  <div class="section-head">
-    <div>
-      <h3>Histórico / Arquivo</h3>
-      <span class="muted">Pesquisa, filtros e consulta de todos os registos internos.</span>
-    </div>
-  </div>
-  <div class="task-tabs">
-    <a class="task-tab {% if not filtros.categoria %}active{% endif %}" href="{{ url_for('centro_tarefas') }}">Tudo</a>
-    {% for cat in categorias %}
-      <a class="task-tab {% if filtros.categoria == cat %}active{% endif %}" href="{{ url_for('centro_tarefas', categoria=cat) }}">{{ cat }}</a>
-    {% endfor %}
-  </div>
+<div class="task-tabs">
+  <a class="task-tab {% if filtros.vista == 'minhas' %}active{% endif %}" href="{{ url_for('centro_tarefas', vista='minhas') }}">Minhas</a>
+  <a class="task-tab {% if filtros.vista == 'abertas' %}active{% endif %}" href="{{ url_for('centro_tarefas', vista='abertas') }}">Abertas</a>
+  <a class="task-tab {% if filtros.vista == 'urgentes' %}active{% endif %}" href="{{ url_for('centro_tarefas', vista='urgentes') }}">Urgentes</a>
+  <a class="task-tab {% if filtros.vista == 'departamento' %}active{% endif %}" href="{{ url_for('centro_tarefas', vista='departamento') }}">Departamento</a>
+  <a class="task-tab {% if filtros.vista == 'arquivo' %}active{% endif %}" href="{{ url_for('centro_tarefas', vista='arquivo') }}">Arquivo</a>
+</div>
 
 <form method="get" class="filter-form modern-filter">
   <input type="hidden" name="page" value="1">
+  <input type="hidden" name="vista" value="{{ filtros.vista }}">
   <div class="grid">
     <label>Pesquisa <input name="q" value="{{ filtros.q }}" placeholder="Assunto, matrícula, cliente..."></label>
-    <label>Categoria
+    <label>Tipo
       <select name="categoria">
-        <option value="">Todas</option>
+        <option value="">Todos</option>
         {% for c in categorias %}
           <option value="{{ c }}" {% if filtros.categoria == c %}selected{% endif %}>{{ c }}</option>
         {% endfor %}
@@ -141,8 +64,18 @@
     </label>
   </div>
   <button>Filtrar</button>
-  <a class="button secondary" href="{{ url_for('centro_tarefas') }}">Limpar</a>
+  <a class="button secondary" href="{{ url_for('centro_tarefas', vista=filtros.vista) }}">Limpar</a>
 </form>
+
+<div class="quick-link-grid">
+  <a href="{{ url_for('centro_tarefas', vista=filtros.vista, categoria='Tarefas Operacionais') }}">Operacionais</a>
+  <a href="{{ url_for('centro_tarefas', vista=filtros.vista, categoria='Tarefas de Gestão') }}">Gestão</a>
+  <a href="{{ url_for('centro_tarefas', vista=filtros.vista, categoria='Tarefas de Implementação') }}">Implementação</a>
+  <a href="{{ url_for('centro_tarefas', vista=filtros.vista, categoria='Pedidos / Dúvidas') }}">Pedidos / Dúvidas</a>
+  <a href="{{ url_for('centro_tarefas', vista=filtros.vista, categoria='Incidentes / Reportes') }}">Reportes</a>
+  <a href="{{ url_for('centro_tarefas', vista=filtros.vista, categoria='Sugestões') }}">Sugestões</a>
+  <a href="{{ url_for('incidentes_frota') }}">Incidentes Frota</a>
+</div>
 
 <div class="table-shell">
   <table class="modern-table">
@@ -184,30 +117,12 @@
 
 <div class="pagination">
   {% if pagination.page > 1 %}
-    <a class="button secondary" href="{{ url_for('centro_tarefas', categoria=filtros.categoria, estado=filtros.estado, prioridade=filtros.prioridade, departamento=filtros.departamento, q=filtros.q, page=pagination.page - 1) }}">Anterior</a>
+    <a class="button secondary" href="{{ url_for('centro_tarefas', vista=filtros.vista, categoria=filtros.categoria, estado=filtros.estado, prioridade=filtros.prioridade, departamento=filtros.departamento, q=filtros.q, page=pagination.page - 1) }}">Anterior</a>
   {% endif %}
   <span>Página {{ pagination.page }} de {{ pagination.pages }} · {{ pagination.total }} registos</span>
   {% if pagination.page < pagination.pages %}
-    <a class="button secondary" href="{{ url_for('centro_tarefas', categoria=filtros.categoria, estado=filtros.estado, prioridade=filtros.prioridade, departamento=filtros.departamento, q=filtros.q, page=pagination.page + 1) }}">Seguinte</a>
+    <a class="button secondary" href="{{ url_for('centro_tarefas', vista=filtros.vista, categoria=filtros.categoria, estado=filtros.estado, prioridade=filtros.prioridade, departamento=filtros.departamento, q=filtros.q, page=pagination.page + 1) }}">Seguinte</a>
   {% endif %}
 </div>
-
-</section>
-
-<section class="workspace-section">
-  <div class="section-head">
-    <div>
-      <h3>Parametrização e Conhecimento</h3>
-      <span class="muted">Apoio à utilização e configuração relacionada com comunicação e tarefas.</span>
-    </div>
-  </div>
-  <div class="quick-link-grid">
-    <a href="{{ url_for('conhecimento_index') }}?area=Comunicação e tarefas">Conhecimento</a>
-    {% if current_user.role == 'Admin' %}
-      <a href="{{ url_for('users') }}">Utilizadores e acessos</a>
-      <a href="{{ url_for('admin_home') }}">Configurações globais</a>
-    {% endif %}
-  </div>
-</section>
 
 {% endblock %}
