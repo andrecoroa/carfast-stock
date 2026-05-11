@@ -9,3 +9,7 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
+      - key: DATABASE_PATH
+        value: /opt/render/project/src/storage/stock.db
+      - key: UPLOAD_DIR_PATH
+        value: /opt/render/project/src/storage/uploads

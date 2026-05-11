@@ -7,6 +7,7 @@ import calendar
 import re
 import shutil
 import traceback
+import os
 from io import BytesIO
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -31,8 +32,16 @@ except ImportError:
     PdfReader = None
 
 APP_DIR = Path(__file__).parent
-DB_PATH = APP_DIR / "stock.db"
-UPLOAD_DIR = APP_DIR / "uploads"
+DB_PATH = Path(os.environ.get("DATABASE_PATH", APP_DIR / "stock.db"))
+if not DB_PATH.is_absolute():
+    DB_PATH = APP_DIR / DB_PATH
+DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+if DB_PATH != APP_DIR / "stock.db" and not DB_PATH.exists() and (APP_DIR / "stock.db").exists():
+    shutil.copyfile(APP_DIR / "stock.db", DB_PATH)
+
+UPLOAD_DIR = Path(os.environ.get("UPLOAD_DIR_PATH", APP_DIR / "uploads"))
+if not UPLOAD_DIR.is_absolute():
+    UPLOAD_DIR = APP_DIR / UPLOAD_DIR
 IMPORT_DIR = UPLOAD_DIR / "imports"
 UPLOAD_DIR.mkdir(exist_ok=True)
 IMPORT_DIR.mkdir(exist_ok=True)
