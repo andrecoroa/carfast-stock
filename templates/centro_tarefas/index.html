@@ -14,41 +14,92 @@
   </div>
 </div>
 
-<div class="hub-grid">
-  <a class="hub-card" href="{{ url_for('incidentes_frota') }}">
-    <h3>Incidentes Frota</h3>
-    <p>Consultar e gerir incidentes ligados a viaturas, clientes, oficinas e outros temas de frota.</p>
-  </a>
-  <a class="hub-card primary-action" href="{{ url_for('novo_incidente_frota') }}">
-    <h3>Novo incidente frota</h3>
-    <p>Criar incidente com classificação, gravidade, anexos e follow-up automático quando aplicável.</p>
-  </a>
-</div>
+{% set info = {
+  'Tarefas Operacionais': ['task-blue', 'Execução operacional e follow-up diário.'],
+  'Tarefas de Gestão': ['task-yellow', 'Coordenação, validações, decisões e acompanhamento.'],
+  'Tarefas de Implementação': ['task-green', 'Melhorias, sistemas, processos e alterações a implementar.'],
+  'Pedidos / Dúvidas': ['task-yellow', 'Pedidos internos, apoio e esclarecimentos.'],
+  'Incidentes / Reportes': ['task-red', 'Problemas, erros e comunicações relevantes.'],
+  'Sugestões': ['task-green', 'Ideias de melhoria e automação.']
+} %}
 
-<div class="task-type-grid">
-  {% set info = {
-    'Tarefas Operacionais': ['task-blue', 'Execução operacional e follow-up diário.'],
-    'Tarefas de Gestão': ['task-yellow', 'Coordenação, validações, decisões e acompanhamento.'],
-    'Tarefas de Implementação': ['task-green', 'Melhorias, sistemas, processos e alterações a implementar.'],
-    'Pedidos / Dúvidas': ['task-yellow', 'Pedidos internos, apoio e esclarecimentos.'],
-    'Incidentes / Reportes': ['task-red', 'Problemas, erros e comunicações relevantes.'],
-    'Sugestões': ['task-green', 'Ideias de melhoria e automação.']
-  } %}
-  {% for cat in categorias %}
-    <a class="task-type-card {{ info.get(cat, ['task-blue', 'Registos internos.'])[0] }}" href="{{ url_for('centro_tarefas', categoria=cat) }}">
-      <span>{{ resumo.get(cat, 0) }}</span>
-      <strong>{{ cat }}</strong>
-      <p>{{ info.get(cat, ['task-blue', 'Registos internos.'])[1] }}</p>
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Operacional</h3>
+      <span class="muted">Criação rápida de trabalho interno e acompanhamento diário.</span>
+    </div>
+  </div>
+  <div class="action-grid">
+    <a class="hub-card primary-action" href="{{ url_for('centro_tarefas_novo') }}">
+      <h3>Novo registo</h3>
+      <p>Criar tarefa, pedido, reporte ou sugestão para acompanhamento interno.</p>
     </a>
-  {% endfor %}
-</div>
+    <a class="hub-card" href="{{ url_for('centro_tarefas', categoria='Tarefas Operacionais') }}">
+      <h3>Tarefas Operacionais</h3>
+      <p>Execução diária, follow-up operacional e trabalho de rotina.</p>
+    </a>
+    <a class="hub-card" href="{{ url_for('centro_tarefas', categoria='Tarefas de Gestão') }}">
+      <h3>Tarefas de Gestão</h3>
+      <p>Coordenação, validações, decisões e acompanhamento de prioridades.</p>
+    </a>
+    <a class="hub-card" href="{{ url_for('centro_tarefas', categoria='Tarefas de Implementação') }}">
+      <h3>Tarefas de Implementação</h3>
+      <p>Melhorias, sistemas, processos e alterações a colocar em prática.</p>
+    </a>
+  </div>
+</section>
 
-<div class="task-tabs">
-  <a class="task-tab {% if not filtros.categoria %}active{% endif %}" href="{{ url_for('centro_tarefas') }}">Tudo</a>
-  {% for cat in categorias %}
-    <a class="task-tab {% if filtros.categoria == cat %}active{% endif %}" href="{{ url_for('centro_tarefas', categoria=cat) }}">{{ cat }}</a>
-  {% endfor %}
-</div>
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Pedidos, Reportes e Ideias</h3>
+      <span class="muted">Comunicação interna, dúvidas, incidentes gerais e sugestões.</span>
+    </div>
+  </div>
+  <div class="task-type-grid">
+    {% for cat in ['Pedidos / Dúvidas', 'Incidentes / Reportes', 'Sugestões'] %}
+      <a class="task-type-card {{ info.get(cat, ['task-blue', 'Registos internos.'])[0] }}" href="{{ url_for('centro_tarefas', categoria=cat) }}">
+        <span>{{ resumo.get(cat, 0) }}</span>
+        <strong>{{ cat }}</strong>
+        <p>{{ info.get(cat, ['task-blue', 'Registos internos.'])[1] }}</p>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Incidentes Frota</h3>
+      <span class="muted">Atalho contextual para incidentes específicos de viaturas.</span>
+    </div>
+  </div>
+  <div class="action-grid">
+    <a class="hub-card" href="{{ url_for('incidentes_frota') }}">
+      <h3>Gerir incidentes frota</h3>
+      <p>Consultar incidentes ligados a viaturas, clientes, oficinas e preparação.</p>
+    </a>
+    <a class="hub-card primary-action" href="{{ url_for('novo_incidente_frota') }}">
+      <h3>Novo incidente frota</h3>
+      <p>Criar incidente com classificação, gravidade, anexos e opção de tarefa.</p>
+    </a>
+  </div>
+</section>
+
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Histórico / Arquivo</h3>
+      <span class="muted">Pesquisa, filtros e consulta de todos os registos internos.</span>
+    </div>
+  </div>
+  <div class="task-tabs">
+    <a class="task-tab {% if not filtros.categoria %}active{% endif %}" href="{{ url_for('centro_tarefas') }}">Tudo</a>
+    {% for cat in categorias %}
+      <a class="task-tab {% if filtros.categoria == cat %}active{% endif %}" href="{{ url_for('centro_tarefas', categoria=cat) }}">{{ cat }}</a>
+    {% endfor %}
+  </div>
 
 <form method="get" class="filter-form modern-filter">
   <input type="hidden" name="page" value="1">
@@ -140,5 +191,23 @@
     <a class="button secondary" href="{{ url_for('centro_tarefas', categoria=filtros.categoria, estado=filtros.estado, prioridade=filtros.prioridade, departamento=filtros.departamento, q=filtros.q, page=pagination.page + 1) }}">Seguinte</a>
   {% endif %}
 </div>
+
+</section>
+
+<section class="workspace-section">
+  <div class="section-head">
+    <div>
+      <h3>Parametrização e Conhecimento</h3>
+      <span class="muted">Apoio à utilização e configuração relacionada com comunicação e tarefas.</span>
+    </div>
+  </div>
+  <div class="quick-link-grid">
+    <a href="{{ url_for('conhecimento_index') }}?area=Comunicação e tarefas">Conhecimento</a>
+    {% if current_user.role == 'Admin' %}
+      <a href="{{ url_for('users') }}">Utilizadores e acessos</a>
+      <a href="{{ url_for('admin_home') }}">Configurações globais</a>
+    {% endif %}
+  </div>
+</section>
 
 {% endblock %}
