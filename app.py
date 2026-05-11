@@ -5931,7 +5931,9 @@ def novo_incidente_frota():
                 "SELECT * FROM incidentes_frota WHERE id = ?",
                 (incidente_id,)
             ).fetchone()
-            tarefa_id = criar_tarefa_frota_para_incidente(c, incidente, classificacao)
+            tarefa_id = None
+            if request.form.get("criar_tarefa"):
+                tarefa_id = criar_tarefa_frota_para_incidente(c, incidente, classificacao)
             log_action("criação incidente", "incidentes_frota", incidente_id, f"{v['matricula']} · {classificacao['nome']}", conn=c)
             if tarefa_id:
                 log_action("criação tarefa", "centro_tarefas", tarefa_id, f"Follow-up incidente {incidente_id}", conn=c)

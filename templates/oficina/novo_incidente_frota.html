@@ -48,6 +48,11 @@
     <label>Criado por <input name="criado_por"></label>
   </div>
 
+  <label class="check-option">
+    <input type="checkbox" name="criar_tarefa" id="criarTarefaIncidente" checked>
+    Criar tarefa de follow-up no Centro de Tarefas
+  </label>
+
   <label>Descrição do incidente
     <textarea name="descricao" required></textarea>
   </label>
@@ -60,5 +65,25 @@
 
   <button>Criar incidente</button>
 </form>
+
+<script>
+  const classificacoesIncidente = {
+    {% for c in classificacoes %}
+      "{{ c.id }}": {{ 1 if c.gera_tarefa else 0 }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+  };
+  const selectClassificacao = document.querySelector('select[name="classificacao_id"]');
+  const criarTarefa = document.getElementById('criarTarefaIncidente');
+
+  function aplicarDefaultTarefa() {
+    if (!selectClassificacao || !criarTarefa) return;
+    criarTarefa.checked = Boolean(classificacoesIncidente[selectClassificacao.value]);
+  }
+
+  if (selectClassificacao && criarTarefa) {
+    aplicarDefaultTarefa();
+    selectClassificacao.addEventListener('change', aplicarDefaultTarefa);
+  }
+</script>
 
 {% endblock %}
