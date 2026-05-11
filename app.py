@@ -210,10 +210,19 @@ INCIDENTE_GRAVIDADES = ["Baixa", "Média", "Alta", "Crítica"]
 INCIDENTE_FATURAVEL = ["Sim", "Não", "A avaliar"]
 TAREFA_FROTA_ESTADOS = ["Pendente", "Em curso", "Bloqueada", "Concluída", "Validada", "Cancelada"]
 VENDA_USADOS_ESTADOS = ["Selecionada", "Em análise", "Aprovada", "Exportada", "Vendida", "Cancelada"]
-CENTRO_TAREFAS_CATEGORIAS = ["Tarefas", "Pedidos / Dúvidas", "Incidentes / Reportes", "Sugestões"]
+CENTRO_TAREFAS_CATEGORIAS = [
+    "Tarefas Operacionais",
+    "Tarefas de Gestão",
+    "Tarefas de Implementação",
+    "Pedidos / Dúvidas",
+    "Incidentes / Reportes",
+    "Sugestões",
+]
 CENTRO_TAREFAS_PRIORIDADES = ["Urgente", "Alta", "Média", "Baixa"]
 CENTRO_TAREFAS_ESTADOS = {
-    "Tarefas": ["Novo", "Em execução", "Concluído"],
+    "Tarefas Operacionais": ["Novo", "Em execução", "Concluído"],
+    "Tarefas de Gestão": ["Novo", "Em execução", "Concluído"],
+    "Tarefas de Implementação": ["Novo", "Em execução", "Concluído"],
     "Pedidos / Dúvidas": ["Novo", "Respondido", "Fechado"],
     "Incidentes / Reportes": ["Novo", "Em análise", "Resolvido"],
     "Sugestões": ["Nova", "Em análise", "Aceite", "Rejeitada"],
@@ -306,7 +315,9 @@ A importação não deve apagar histórico, processos, incidentes, faturas ou di
 Centralizar trabalho interno, pedidos, dúvidas, reportes e sugestões.
 
 Categorias
-- Tarefas: algo que exige execução.
+- Tarefas Operacionais: execução diária e follow-up operacional.
+- Tarefas de Gestão: decisões, validações, acompanhamento e coordenação.
+- Tarefas de Implementação: melhorias, sistemas, processos e alterações a implementar.
 - Pedidos / Dúvidas: pedido de apoio, informação ou decisão.
 - Incidentes / Reportes: problema ou situação relevante.
 - Sugestões: melhoria ou ideia.
@@ -1379,6 +1390,11 @@ def init_db():
             atualizado_em TEXT,
             fechado_em TEXT
         )
+        """)
+        c.execute("""
+            UPDATE centro_tarefas
+            SET categoria = 'Tarefas Operacionais'
+            WHERE categoria = 'Tarefas'
         """)
         ensure_columns(c, "centro_tarefas", {
             "source_system": "TEXT DEFAULT 'CarFast'",

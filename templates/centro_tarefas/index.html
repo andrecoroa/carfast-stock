@@ -4,7 +4,7 @@
 <div class="page-hero">
   <div>
     <h2>Centro de Tarefas</h2>
-    <p>Crie, acompanhe e resolva tarefas, pedidos, incidentes e sugestões.</p>
+    <p>Crie, acompanhe e resolva tarefas operacionais, gestão, implementação, pedidos, incidentes e sugestões.</p>
   </div>
   <div class="hero-actions">
     <a class="button" href="{{ url_for('centro_tarefas_novo') }}">Novo Registo</a>
@@ -16,16 +16,18 @@
 
 <div class="task-type-grid">
   {% set info = {
-    'Tarefas': ['task-blue', 'Execução operacional e follow-up diário.'],
+    'Tarefas Operacionais': ['task-blue', 'Execução operacional e follow-up diário.'],
+    'Tarefas de Gestão': ['task-yellow', 'Coordenação, validações, decisões e acompanhamento.'],
+    'Tarefas de Implementação': ['task-green', 'Melhorias, sistemas, processos e alterações a implementar.'],
     'Pedidos / Dúvidas': ['task-yellow', 'Pedidos internos, apoio e esclarecimentos.'],
     'Incidentes / Reportes': ['task-red', 'Problemas, erros e comunicações relevantes.'],
     'Sugestões': ['task-green', 'Ideias de melhoria e automação.']
   } %}
   {% for cat in categorias %}
-    <a class="task-type-card {{ info[cat][0] }}" href="{{ url_for('centro_tarefas', categoria=cat) }}">
+    <a class="task-type-card {{ info.get(cat, ['task-blue', 'Registos internos.'])[0] }}" href="{{ url_for('centro_tarefas', categoria=cat) }}">
       <span>{{ resumo.get(cat, 0) }}</span>
       <strong>{{ cat }}</strong>
-      <p>{{ info[cat][1] }}</p>
+      <p>{{ info.get(cat, ['task-blue', 'Registos internos.'])[1] }}</p>
     </a>
   {% endfor %}
 </div>
