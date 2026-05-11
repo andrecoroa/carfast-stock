@@ -211,16 +211,16 @@
   <tbody>
     {% for t in tarefas_frota %}
       <tr>
-        <td>{{ t.titulo }}</td>
+        <td>{{ t.assunto }}</td>
         <td>{{ t.prioridade }}</td>
         <td>{{ t.estado }}</td>
         <td>{{ t.data_limite or '' }}</td>
         <td>{{ t.responsavel or '' }}</td>
         <td>
-          {% if t.origem_tipo == 'incidente_frota' %}
-            <a href="{{ url_for('incidente_frota_detail', incidente_id=t.origem_id|int) }}">Incidente #{{ t.origem_id }}</a>
+          {% if t.incidente_id %}
+            <a href="{{ url_for('incidente_frota_detail', incidente_id=t.incidente_id|int) }}">Incidente #{{ t.incidente_id }}</a>
           {% else %}
-            {{ t.origem_tipo or '' }}
+            {{ t.source_system or '' }}
           {% endif %}
         </td>
       </tr>

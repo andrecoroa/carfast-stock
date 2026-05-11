@@ -4,9 +4,12 @@
 <div class="page-head">
   <div>
     <h2>Tarefas Frota</h2>
-    <p class="muted">Follow-up gerado por incidentes da frota.</p>
+    <p class="muted">Vista filtrada do Centro de Tarefas com follow-up gerado por incidentes da frota.</p>
   </div>
-  <a class="button secondary" href="{{ url_for('incidentes_frota') }}">Incidentes Frota</a>
+  <div class="hero-actions">
+    <a class="button secondary" href="{{ url_for('centro_tarefas') }}">Centro de Tarefas</a>
+    <a class="button secondary" href="{{ url_for('incidentes_frota') }}">Incidentes Frota</a>
+  </div>
 </div>
 
 <form method="get" class="filter-form">
@@ -52,15 +55,15 @@
       <tr>
         <td>{{ t.data_limite or '' }}</td>
         <td><strong>{{ t.matricula or '' }}</strong></td>
-        <td>{{ t.titulo }}</td>
+        <td>{{ t.assunto }}</td>
         <td>{{ t.prioridade }}</td>
         <td>{{ t.estado }}</td>
         <td>{{ t.responsavel or '' }}</td>
         <td>
-          {% if t.origem_tipo == 'incidente_frota' %}
-            <a href="{{ url_for('incidente_frota_detail', incidente_id=t.origem_id|int) }}">Incidente #{{ t.origem_id }}</a>
+          {% if t.incidente_id %}
+            <a href="{{ url_for('incidente_frota_detail', incidente_id=t.incidente_id|int) }}">Incidente #{{ t.incidente_id }}</a>
           {% else %}
-            {{ t.origem_tipo or '' }}
+            {{ t.source_system or '' }}
           {% endif %}
         </td>
         <td>

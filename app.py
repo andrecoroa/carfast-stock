@@ -2136,6 +2136,40 @@ def init_db():
             validada_em TEXT
         )
         """)
+        c.execute("""
+            INSERT INTO centro_tarefas
+            (categoria, assunto, descricao, departamento, prioridade, estado,
+             matricula, responsavel, data_limite, criado_por_nome, criado_em,
+             atualizado_em, source_system, external_reference)
+            SELECT
+                'Tarefas Operacionais',
+                tf.titulo,
+                tf.descricao,
+                'Frota',
+                COALESCE(tf.prioridade, 'Média'),
+                CASE tf.estado
+                    WHEN 'Em curso' THEN 'Em execução'
+                    WHEN 'Concluída' THEN 'Concluído'
+                    WHEN 'Validada' THEN 'Concluído'
+                    ELSE 'Novo'
+                END,
+                tf.matricula,
+                tf.responsavel,
+                tf.data_limite,
+                'Migração tarefas_frota',
+                COALESCE(tf.criada_em, ?),
+                ?,
+                'Incidentes Frota',
+                'incidente_frota:' || tf.origem_id
+            FROM tarefas_frota tf
+            WHERE tf.origem_tipo = 'incidente_frota'
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM centro_tarefas ct
+                  WHERE ct.source_system = 'Incidentes Frota'
+                    AND ct.external_reference = 'incidente_frota:' || tf.origem_id
+              )
+        """, (now(), now()))
 
         c.execute("""
         CREATE TABLE IF NOT EXISTS viaturas_venda (
@@ -2577,22 +2611,27 @@ def criar_tarefa_frota_para_incidente(conn, incidente, classificacao):
         descricao = f"{descricao}\n\nInstruções: {instrucoes}"
 
     cur = conn.execute("""
-        INSERT INTO tarefas_frota
-        (origem_tipo, origem_id, viatura_id, matricula, titulo, descricao,
-         responsavel, prioridade, estado, data_limite, criada_em)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pendente', ?, ?)
+        INSERT INTO centro_tarefas
+        (categoria, assunto, descricao, departamento, prioridade, estado,
+         matricula, cliente, responsavel, data_limite, criado_por_nome,
+         criado_em, atualizado_em, source_system, external_reference)
+        VALUES ('Tarefas Operacionais', ?, ?, 'Frota', ?, 'Novo',
+                ?, ?, ?, ?, ?, ?, ?, 'Incidentes Frota', ?)
     """, (
-        "incidente_frota",
-        str(incidente["id"]),
-        incidente["viatura_id"],
-        incidente["matricula"],
         f"Follow-up incidente {incidente['matricula']} — {classificacao['nome']}",
         descricao,
-        incidente["responsavel_followup"] or classificacao["equipa_responsavel_default"],
         classificacao["prioridade_default"] or incidente["gravidade"] or "Média",
+        incidente["matricula"],
+        incidente["cliente"],
+        incidente["responsavel_followup"] or classificacao["equipa_responsavel_default"],
         incidente["data_limite"] or data_limite,
+        incidente["criado_por"],
         now(),
+        now(),
+        f"incidente_frota:{incidente['id']}",
     ))
+    record_task_history(conn, cur.lastrowid, "criação", None, "Novo")
+    record_task_history(conn, cur.lastrowid, "origem", None, f"Incidente Frota #{incidente['id']}")
     return cur.lastrowid
 
 
@@ -5785,9 +5824,10 @@ def incidentes_frota():
                 WHERE faturavel IN ('Sim', 'A avaliar') AND estado NOT IN ('Fechado', 'Cancelado')
             """).fetchone()["c"],
             "tarefas": c.execute("""
-                SELECT COUNT(*) c FROM tarefas_frota
-                WHERE origem_tipo = 'incidente_frota'
-                  AND estado IN ('Pendente', 'Em curso', 'Bloqueada')
+                SELECT COUNT(*) c FROM centro_tarefas
+                WHERE source_system = 'Incidentes Frota'
+                  AND external_reference LIKE 'incidente_frota:%'
+                  AND estado IN ('Novo', 'Em execução')
             """).fetchone()["c"],
         }
 
@@ -5894,7 +5934,7 @@ def novo_incidente_frota():
             tarefa_id = criar_tarefa_frota_para_incidente(c, incidente, classificacao)
             log_action("criação incidente", "incidentes_frota", incidente_id, f"{v['matricula']} · {classificacao['nome']}", conn=c)
             if tarefa_id:
-                log_action("criação tarefa", "tarefas_frota", tarefa_id, f"Follow-up incidente {incidente_id}", conn=c)
+                log_action("criação tarefa", "centro_tarefas", tarefa_id, f"Follow-up incidente {incidente_id}", conn=c)
             if tarefa_id:
                 flash("Incidente criado e tarefa de follow-up gerada.", "success")
             else:
@@ -5931,10 +5971,12 @@ def incidente_frota_detail(incidente_id):
             ORDER BY id DESC
         """, (incidente_id,)).fetchall()
         tarefas = c.execute("""
-            SELECT * FROM tarefas_frota
-            WHERE origem_tipo = 'incidente_frota' AND origem_id = ?
+            SELECT *
+            FROM centro_tarefas
+            WHERE source_system = 'Incidentes Frota'
+              AND external_reference = ?
             ORDER BY id DESC
-        """, (str(incidente_id),)).fetchall()
+        """, (f"incidente_frota:{incidente_id}",)).fetchall()
 
     return render_template(
         "oficina/incidente_frota_detail.html",
@@ -6032,40 +6074,42 @@ def tarefas_frota():
     responsavel = request.args.get("responsavel", "")
     prioridade = request.args.get("prioridade", "")
     matricula = request.args.get("matricula", "").strip().upper()
-    where = ["1=1"]
+    where = ["ct.source_system = 'Incidentes Frota'", "ct.external_reference LIKE 'incidente_frota:%'"]
     params = []
     if estado:
-        where.append("tf.estado = ?")
+        where.append("ct.estado = ?")
         params.append(estado)
     if responsavel:
-        where.append("tf.responsavel LIKE ?")
+        where.append("ct.responsavel LIKE ?")
         params.append(f"%{responsavel}%")
     if prioridade:
-        where.append("tf.prioridade = ?")
+        where.append("ct.prioridade = ?")
         params.append(prioridade)
     if matricula:
-        where.append("tf.matricula LIKE ?")
+        where.append("ct.matricula LIKE ?")
         params.append(f"%{matricula}%")
 
     with db() as c:
         rows = c.execute(f"""
-            SELECT tf.*, i.estado AS incidente_estado
-            FROM tarefas_frota tf
+            SELECT ct.*,
+                   REPLACE(ct.external_reference, 'incidente_frota:', '') AS incidente_id,
+                   i.estado AS incidente_estado
+            FROM centro_tarefas ct
             LEFT JOIN incidentes_frota i
-              ON tf.origem_tipo = 'incidente_frota' AND tf.origem_id = CAST(i.id AS TEXT)
+              ON ct.external_reference = 'incidente_frota:' || CAST(i.id AS TEXT)
             WHERE {' AND '.join(where)}
             ORDER BY
-              CASE tf.estado WHEN 'Pendente' THEN 1 WHEN 'Em curso' THEN 2 WHEN 'Bloqueada' THEN 3 ELSE 4 END,
-              tf.data_limite ASC,
-              tf.id DESC
+              CASE ct.estado WHEN 'Novo' THEN 1 WHEN 'Em execução' THEN 2 ELSE 3 END,
+              ct.data_limite ASC,
+              ct.id DESC
             LIMIT 500
         """, params).fetchall()
 
     return render_template(
         "oficina/tarefas_frota.html",
         tarefas=rows,
-        estados=TAREFA_FROTA_ESTADOS,
-        prioridades=INCIDENTE_GRAVIDADES,
+        estados=CENTRO_TAREFAS_ESTADOS["Tarefas Operacionais"],
+        prioridades=CENTRO_TAREFAS_PRIORIDADES,
         filtros={
             "estado": estado,
             "responsavel": responsavel,
@@ -6077,29 +6121,30 @@ def tarefas_frota():
 
 @app.route("/tarefas-frota/<int:tarefa_id>/estado", methods=["POST"])
 def atualizar_tarefa_frota_estado(tarefa_id):
-    estado = request.form.get("estado") or "Pendente"
-    concluida_em = now() if estado in {"Concluída", "Validada"} else None
-    validada_por = request.form.get("validada_por")
-    validada_em = now() if estado == "Validada" else None
+    estado = request.form.get("estado") or "Novo"
     with db() as c:
+        tarefa = c.execute("SELECT * FROM centro_tarefas WHERE id = ?", (tarefa_id,)).fetchone()
+        if not tarefa:
+            flash("Tarefa não encontrada.", "error")
+            return redirect(url_for("tarefas_frota"))
         c.execute("""
-            UPDATE tarefas_frota
+            UPDATE centro_tarefas
             SET estado = ?,
                 responsavel = ?,
-                concluida_em = COALESCE(?, concluida_em),
-                validada_por = COALESCE(?, validada_por),
-                validada_em = COALESCE(?, validada_em)
+                atualizado_em = ?,
+                fechado_em = CASE WHEN ? = 'Concluído' THEN COALESCE(fechado_em, ?) ELSE fechado_em END
             WHERE id = ?
         """, (
             estado,
             request.form.get("responsavel"),
-            concluida_em,
-            validada_por,
-            validada_em,
+            now(),
+            estado,
+            now(),
             tarefa_id,
         ))
-        if estado == "Validada":
-            log_action("validação tarefa", "tarefas_frota", tarefa_id, request.form.get("validada_por"), conn=c)
+        if tarefa["estado"] != estado:
+            record_task_history(c, tarefa_id, "estado", tarefa["estado"], estado)
+        log_action("atualização tarefa frota", "centro_tarefas", tarefa_id, estado, conn=c)
     flash("Tarefa atualizada.", "success")
     return redirect(request.referrer or url_for("tarefas_frota"))
 
@@ -8169,15 +8214,18 @@ def viatura_detail(viatura_id):
         """, (viatura_id, v["matricula"])).fetchall()
 
         tarefas_frota_rows = c.execute("""
-            SELECT *
-            FROM tarefas_frota
-            WHERE viatura_id = ? OR matricula = ?
+            SELECT *,
+                   REPLACE(external_reference, 'incidente_frota:', '') AS incidente_id
+            FROM centro_tarefas
+            WHERE source_system = 'Incidentes Frota'
+              AND external_reference LIKE 'incidente_frota:%'
+              AND matricula = ?
             ORDER BY
-              CASE estado WHEN 'Pendente' THEN 1 WHEN 'Em curso' THEN 2 WHEN 'Bloqueada' THEN 3 ELSE 4 END,
+              CASE estado WHEN 'Novo' THEN 1 WHEN 'Em execução' THEN 2 ELSE 3 END,
               data_limite ASC,
               id DESC
             LIMIT 50
-        """, (viatura_id, v["matricula"])).fetchall()
+        """, (v["matricula"],)).fetchall()
 
     return render_template(
         "oficina/viatura_detail.html",
