@@ -894,6 +894,34 @@ def gestor_required(view):
     return wrapped
 
 
+OFICINA_OPERADOR_ALLOWED_ENDPOINTS = {
+    "home",
+    "logout",
+    "uploaded_file",
+    "manutencao_home",
+    "processos",
+    "novo_processo",
+    "processo_detail",
+    "processo_checklist",
+    "rececao",
+    "diagnostico",
+    "comparacao",
+    "stock_home",
+    "index",
+    "novo_movimento",
+    "movimentos",
+    "impros_rentway",
+    "folhas_obra_rentway",
+    "viaturas",
+    "viatura_detail",
+    "auditoria_viatura_timeline",
+}
+
+
+def is_oficina_operador():
+    return session.get("role") == "Operador" and session.get("departamento") == "Manutenção"
+
+
 @app.context_processor
 def inject_user():
     return {
@@ -903,6 +931,7 @@ def inject_user():
             "role": session.get("role"),
             "departamento": session.get("departamento"),
         } if session.get("user_id") else None,
+        "is_oficina_operador": is_oficina_operador(),
         "context_help": context_help_for_endpoint(),
     }
 
@@ -915,6 +944,9 @@ def enforce_authentication():
         return None
     if not session.get("user_id"):
         return redirect(url_for("login", next=request.full_path if request.query_string else request.path))
+    if is_oficina_operador() and endpoint not in OFICINA_OPERADOR_ALLOWED_ENDPOINTS:
+        flash("Este utilizador tem acesso apenas à área de Oficina.", "error")
+        return redirect(url_for("manutencao_home"))
     if request.method == "POST" and session.get("role") == "Consulta":
         flash("O perfil Consulta apenas permite leitura.", "error")
         return redirect(request.referrer or url_for("home"))

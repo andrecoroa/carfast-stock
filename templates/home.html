@@ -5,11 +5,13 @@
 
 <div class="hub-grid">
 
+  {% if not is_oficina_operador %}
   <a class="hub-card" href="{{ url_for('centro_tarefas') }}">
     <div class="hub-icon">◎</div>
     <h2>Comunicação e tarefas</h2>
     <p>Tarefas, pedidos, incidentes, reportes, comentários e sugestões internas.</p>
   </a>
+  {% endif %}
 
   <a class="hub-card" href="{{ url_for('manutencao_home') }}">
     <div class="hub-icon">🔧</div>
@@ -17,6 +19,7 @@
     <p>Processos, diagnósticos, FO, validações, protocolos, peças e stock.</p>
   </a>
 
+  {% if not is_oficina_operador %}
   <a class="hub-card" href="{{ url_for('frota_home') }}">
     <div class="hub-icon">▦</div>
     <h2>Frota</h2>
@@ -35,6 +38,7 @@
       <h2>Administração e configurações</h2>
       <p>Utilizadores, permissões, classificações, regras, campos e parâmetros.</p>
     </a>
+  {% endif %}
   {% endif %}
 
 </div>

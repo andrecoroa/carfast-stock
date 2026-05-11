@@ -25,10 +25,12 @@
       <h3>Processos ativos</h3>
       <p>Consultar estados, receção, diagnóstico, FO, tarefas, validações e evolução.</p>
     </a>
-    <a class="hub-card" href="{{ url_for('protocolos_home') }}">
-      <h3>Aplicar protocolos</h3>
-      <p>Usar checklists técnicas nos processos de manutenção e validação.</p>
-    </a>
+    {% if not is_oficina_operador %}
+      <a class="hub-card" href="{{ url_for('protocolos_home') }}">
+        <h3>Aplicar protocolos</h3>
+        <p>Usar checklists técnicas nos processos de manutenção e validação.</p>
+      </a>
+    {% endif %}
   </div>
 </section>
 
@@ -43,7 +45,9 @@
     <a href="{{ url_for('novo_movimento') }}">Novo movimento</a>
     <a href="{{ url_for('index') }}">Stock atual</a>
     <a href="{{ url_for('movimentos') }}">Histórico de movimentos</a>
-    <a href="{{ url_for('novo_artigo') }}">Novo artigo</a>
+    {% if not is_oficina_operador %}
+      <a href="{{ url_for('novo_artigo') }}">Novo artigo</a>
+    {% endif %}
   </div>
 </section>
 
@@ -62,6 +66,7 @@
   </div>
 </section>
 
+{% if not is_oficina_operador %}
 <section class="workspace-section">
   <div class="section-head">
     <div>
@@ -89,5 +94,6 @@
     <a href="{{ url_for('conhecimento_index') }}?area=Oficina">Conhecimento de oficina</a>
   </div>
 </section>
+{% endif %}
 
 {% endblock %}
